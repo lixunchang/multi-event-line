@@ -1,0 +1,44 @@
+.Tooltip{
+  min-width: 90px;
+  background: white;
+  padding: 16px;
+  position: absolute;
+  z-index: 9;
+  background-color: #fff;
+  background-clip: padding-box;
+  border-radius: 4px;
+  box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
+
+  .title{
+    color: #666;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+  .desc{
+    color: #777;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.tooltipLine{
+  position: absolute;
+  top: 300px;
+  display: inline-block;
+  width: 2px;
+  height: 300px;
+  background-color: #e2e2e2;
+  z-index: 9;
+}
+.linePoint{
+  position: absolute;
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: #1890ff;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  z-index: 10;
+}
