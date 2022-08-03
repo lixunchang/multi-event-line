@@ -1,10 +1,8 @@
-# multi-event-line
+# EventLine 复合事件线组件
 
----
+React 事件线组件：同步展示事件和折线图。
 
-#### React 事件线组件：同步展示事件和折线图。
-
-#### A React component that displays multiple types of events and line charts synchronously.
+> A React component that displays multiple types of events and line charts synchronously.
 
 ![一期示意图](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/950bf3b04cfc47db807bd63c2d9b686c~tplv-k3u1fbpfcp-watermark.image?)
 
@@ -22,11 +20,11 @@
 
 ### 开发中：
 
+- 事件选择；(Select event.)；
 - 自定义 tooltip；（To custom tooltip）
 - 绘制圆角长方形；(Draw rect radius)
 - 宽度自动获取父级宽度；（Width Auto width）
 - 鼠标滚轮滚动，触摸板左右移动；(Move with mouse)
-- 事件选择；(Select event.)；
 - 折线缩略轴；(The line charts thumbnail.)；
 
 ## 使用指南：( Use guide )
