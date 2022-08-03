@@ -2,7 +2,7 @@
   "name": "multi-event-line",
   "description":"A React Component for multi types of events and chart line.",
   "keywords": ["event", "chart", "timeline", "eventline", "事件线", "关键指标", "影响因素"],
-  "version": "1.1.1",
+  "version": "1.1.2",
   "scripts": {
     "start": "dumi dev",
     "docs:build": "dumi build",
