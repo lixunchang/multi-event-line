@@ -22,9 +22,10 @@
 
 ### 开发中：
 
-- 绘制圆角长方形；
-- 宽度冬天获取父级宽度；
-- 鼠标滚轮滚动，触摸板左右移动；
+- 自定义 tooltip；（To custom tooltip）
+- 绘制圆角长方形；(Draw rect radius)
+- 宽度自动获取父级宽度；（Width Auto width）
+- 鼠标滚轮滚动，触摸板左右移动；(Move with mouse)
 - 事件选择；(Select event.)；
 - 折线缩略轴；(The line charts thumbnail.)；
 
