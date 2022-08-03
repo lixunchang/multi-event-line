@@ -1,10 +1,8 @@
 # multi-event-line
 
----
+A React component that displays multiple types of events and line charts synchronously.
 
-#### React 事件线组件：同步展示事件和折线图。
-
-#### A React component that displays multiple types of events and line charts synchronously.
+React 事件线组件：同步展示事件和折线图，并联动。
 
 ![一期示意图](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/950bf3b04cfc47db807bd63c2d9b686c~tplv-k3u1fbpfcp-watermark.image?)
 
