@@ -1,6 +1,8 @@
 {
   "name": "multi-event-line",
-  "version": "1.0.1",
+  "description":"A React Component for multi types of events and chart line.",
+  "keywords": ["event", "chart", "timeline", "eventline", "事件线", "关键指标", "影响因素"],
+  "version": "1.1.1",
   "scripts": {
     "start": "dumi dev",
     "docs:build": "dumi build",
@@ -45,5 +47,10 @@
     "lint-staged": "^10.0.7",
     "prettier": "^2.2.1",
     "yorkie": "^2.0.0"
+  },
+  "homepage": "https://github.com/gexinpai/multi-event-line",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gexinpai/multi-event-line.git"
   }
 }
