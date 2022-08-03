@@ -1,4 +1,4 @@
-export interface EventItem {
+export interface IEventItem {
   start: string;
   end?: string;
   title: string;
@@ -6,7 +6,7 @@ export interface EventItem {
   [_: string]: any;
 }
 
-export interface LineItem {
+export interface ILineItem {
   dt: string;
   value: number;
   [_: string]: any;
@@ -26,7 +26,7 @@ export enum EMouseStatus {
   MOVEING = 'moveing',
 }
 
-export interface Location {
+export interface ILocation {
   x: number;
   y: number;
 }

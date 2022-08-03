@@ -36,6 +36,7 @@ export default {
     height: 30,
     minWidth: 60,
     textStyle: {
+      fillStyle: '#fff',
       font: '14px "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',
     },
   },

@@ -4,41 +4,19 @@ nav:
   path: /components
 ---
 
-## EventLine 复合事件线组件
+# EventLine 复合事件线组件
 
-多种类型事件和折线图同步展示、滑动；
+---
 
-#### React 事件线组件：同步展示事件和折线图。
+React 事件线组件：同步展示多类型事件和折线图关键指标，同步滑动。
 
-#### A React component that displays multiple types of events and line charts synchronously.
+> A React component that displays multiple types of events and line charts synchronously.
 
-![一期示意图](https://cdn.nlark.com/yuque/0/2022/png/117339/1659539184462-e7cd1ba6-1860-442b-a4dd-b96935b988d7.png)
-
-### 主要功能：(The main function)
-
-- 展示多个事件（开始结束时间、标题、内容等）； (A lot of events.)
-- 支持事件区分类型展示（展示位置、颜色）；(Multiple types of events)
-- 展示折线（时间，值）；(The line charts)
-- 折线和事件时间同步，并支持同时拖拽滑动；(Synchronously, Drag the slide.)
-- 鼠标 hover 查看事件/折线详细信息；(Mouse hover)
-
-### 体验 Demo
-
-- StackBlitz demo 地址：https://stackblitz.com/edit/react-ts-5wc5jt?file=index.tsx
-
-Demo 演示:
+## Demo 演示:
 
 ```tsx
 import React from 'react';
-import EventLine, { EMouseStatus } from 'multi-event-line';
-
-interface IEventType {
-  label: string;
-  value: string;
-  sort: number;
-  primaryColor?: string;
-  secondaryColor?: string;
-}
+import EventLine, { IEventType, IEventItem, ILineItem } from 'multi-event-line';
 
 const eventTypes: IEventType[] = [
   {
@@ -78,7 +56,7 @@ const eventTypes: IEventType[] = [
   },
 ];
 
-const EVENT_DATA: any = [
+const EVENT_DATA: IEventItem[] = [
   {
     id: 1,
     startDate: '20211201',
@@ -121,7 +99,7 @@ const EVENT_DATA: any = [
   },
 ];
 
-const LINELIST: any = [
+const LINELIST: ILineItem[] = [
   {
     id: 1,
     dt: '20211201',
@@ -150,9 +128,31 @@ export default () => (
     events={EVENT_DATA}
     eventTypes={eventTypes}
     lines={LINELIST}
-    config={{}}
+    config={{ eventStyle: {} }}
   />
 );
+```
+
+## 主要功能 function：
+
+- 展示多个事件（开始结束时间、标题、内容等）； (A lot of events.)
+- 支持事件区分类型展示（展示位置、颜色）；(Multiple types of events)
+- 展示折线（时间，值）；(The line charts)
+- 折线和事件时间同步，并支持同时拖拽滑动；(Synchronously, Drag the slide.)
+- 鼠标 hover 查看事件/折线详细信息；(Mouse hover)
+
+## 开发中：
+
+- 绘制圆角长方形；
+- 宽度冬天获取父级宽度；
+- 鼠标滚轮滚动，触摸板左右移动；
+- 事件选择；(Select event.)；
+- 折线缩略轴；(The line charts thumbnail.)；
+
+## 安装 Install
+
+```bash
+$ npm i multi-event-line --save
 ```
 
 ## API
@@ -245,3 +245,12 @@ const defaultConfig: IConfig = {
   },
 };
 ```
+
+## 温馨提示 Tips ：
+
+- 目前组件基础功能已经调试完毕，欢迎大家试用;
+
+  > At present, the components are still under development and should be used cautiously in the production environment.
+
+- 有问题欢迎提 issues;
+  > However, you are welcome to try it out. Please raise issues if you have any questions

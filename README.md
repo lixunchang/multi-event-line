@@ -6,7 +6,7 @@
 
 #### A React component that displays multiple types of events and line charts synchronously.
 
-![一期示意图](https://cdn.nlark.com/yuque/0/2022/png/117339/1659539184462-e7cd1ba6-1860-442b-a4dd-b96935b988d7.png)
+![一期示意图](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/950bf3b04cfc47db807bd63c2d9b686c~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 主要功能：(The main function)
 

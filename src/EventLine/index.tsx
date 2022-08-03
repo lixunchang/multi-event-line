@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import useMouseMove from './hooks/useMouseMove';
-import { EMouseStatus, ETooltipStatus, EventItem, IEventType, LineItem, Location } from './type';
+import { EMouseStatus, ETooltipStatus, IEventItem, IEventType, ILineItem, ILocation } from './type';
 import { analysisEventLineData, getLineDashYList } from './utils/data';
 import defaultConfig from './defaultConfig';
 import {
@@ -22,9 +22,9 @@ const moment = extendMoment(Moment as any);
 
 interface IProps {
   id?: string;
-  events: EventItem[];
+  events: IEventItem[];
   eventTypes?: any;
-  lines: LineItem[];
+  lines: ILineItem[];
   [_: string]: any;
 }
 
@@ -48,7 +48,16 @@ const eventType0 = {
 export default React.memo(
   ({ id = 'event-line', events, eventTypes: eTypes, lines, config: customConfig }: IProps) => {
     const eventTypes = [eventType0, ...eTypes];
-    const config = { ...defaultConfig, ...customConfig };
+    const config = {
+      ...defaultConfig,
+      ...customConfig,
+      axis: { ...defaultConfig?.axis, ...customConfig?.axis },
+      scale: { ...defaultConfig?.scale, ...customConfig?.scale },
+      fieldNames: { ...defaultConfig?.fieldNames, ...customConfig?.fieldNames },
+      eventTypeStyle: { ...defaultConfig?.eventTypeStyle, ...customConfig?.eventTypeStyle },
+      eventStyle: { ...defaultConfig?.eventStyle, ...customConfig?.eventStyle },
+      lineStyle: { ...defaultConfig?.lineStyle, ...customConfig?.lineStyle },
+    };
     const [paddingTop = 0, paddingRight, paddingLeft, paddingBottom = 25] = config?.padding || {};
     const { width: eventTypeWidth, height: eventTypeHeight } = config?.eventTypeStyle || {};
     const { height: axisXHeight } = config?.axis || {};
