@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 // 绘制水平线
 export const drawHorizontalLine = (
@@ -20,11 +20,13 @@ export const drawHorizontalLine = (
     lineDashOffset = 0,
     scale,
     axisYMax,
-    axisYMin
+    axisYMin,
   } = config;
   ctx.lineWidth = lineWidth;
-  ctx.strokeStyle = '#999'; strokeStyle;
-  ctx.fillStyle = '#999'; fillStyle;
+  ctx.strokeStyle = '#999';
+  strokeStyle;
+  ctx.fillStyle = '#999';
+  fillStyle;
   //TOOD 折线辅助性值
   const every = (axisYMax - axisYMin) / (offsetYs.length - 1);
   offsetYs.forEach((offsetY, i) => {
@@ -46,23 +48,25 @@ export const drawHorizontalLine = (
   ctx.lineDashOffset = 0;
 };
 
-
 /**
  *
  * @param text 日期文本
  * @param index 日期所在数组下标
  * @returns 日期刻度高度、日期刻度颜色、是否展示日期文本，日期文本颜色，日期文本字体(含文字大小)
  */
- const judgeDayScaleStyle = (text: string, {
-  textSize,
-  textSpace,
-  firstHeight,
-  firstColor,
-  secondHeight,
-  secondColor,
-  thirdHeight,
-  thirdColor,
- }: any) => {
+const judgeDayScaleStyle = (
+  text: string,
+  {
+    textSize,
+    textSpace,
+    firstHeight,
+    firstColor,
+    secondHeight,
+    secondColor,
+    thirdHeight,
+    thirdColor,
+  }: any,
+) => {
   const style = {
     height: thirdHeight,
     color: thirdColor,
@@ -91,12 +95,17 @@ export const drawHorizontalLine = (
   return { ...style };
 };
 
-interface IScaleConfig{
-  axisXData: any,
-  scale: Record<string, any>,
+interface IScaleConfig {
+  axisXData: any;
+  scale: Record<string, any>;
 }
 // 绘制x轴刻度
-export const drawAxisScale = (ctx: any, offsetX = 0, offsetY = 0, { axisXData, scale }: IScaleConfig) => {
+export const drawAxisScale = (
+  ctx: any,
+  offsetX = 0,
+  offsetY = 0,
+  { axisXData, scale }: IScaleConfig,
+) => {
   axisXData.forEach((item: any, i: number) => {
     const { height, color, text, textHalfWidth } = judgeDayScaleStyle(item, scale);
     ctx.strokeStyle = color;
@@ -114,15 +123,21 @@ export const drawAxisScale = (ctx: any, offsetX = 0, offsetY = 0, { axisXData, s
   });
 };
 
-const createTextInSchedule = (ctx: any, x: number, y: number, maxWidth: number, text: string, style?:Record<string, any>) => {
-  const {font = '16px microsoft yahe',fillStyle='#fff', textBaseline='middle'} = style||{};
+const createTextInSchedule = (
+  ctx: any,
+  x: number,
+  y: number,
+  maxWidth: number,
+  text: string,
+  style?: Record<string, any>,
+) => {
+  const { font = '16px microsoft yahe', fillStyle = '#fff', textBaseline = 'middle' } = style || {};
   ctx.font = font;
   ctx.fillStyle = fillStyle;
   ctx.textBaseline = textBaseline;
   // ctx.measureText(text).width
   ctx.fillText(text, x, y, maxWidth);
 };
-
 
 export const drawEventRectWidthText = (
   ctx: any,
@@ -131,23 +146,43 @@ export const drawEventRectWidthText = (
   w: number,
   h: number,
   text: string,
-  style?: Record<string,any>
+  style?: Record<string, any>,
 ) => {
   // TODO监听鼠标hover事件
-  const {strokeStyle='#fff',fillStyle='#1890ff', lineWidth=2, textStyle={} } = style||{};
+  const {
+    strokeStyle = '#fff',
+    fillStyle = '#1890ff',
+    lineWidth = 2,
+    textStyle = {},
+  } = style || {};
   ctx.strokeStyle = strokeStyle;
   ctx.fillStyle = fillStyle;
   ctx.lineWidth = lineWidth;
   ctx.strokeRect(x, y, w, h);
   ctx.fillRect(x, y, w, h);
   if (text) {
-    createTextInSchedule(ctx, x + 8, y + h / 2, w, text || '', textStyle);
+    createTextInSchedule(ctx, x + 8, y + h / 2, w, text || '', { ...textStyle });
   }
 };
 
-
-export const drawChartLines = (ctx: any, axisXStart: string, zeroX: number, zeroY: number, list: any, config?:any) => {
-  const {strokeStyle='#1890ff', lineWidth=2, scaleSpace, axisYMin, axisYMax, dashLineSpace = 50, dashLineCount = 5, showTooltip} =config||{};
+export const drawChartLines = (
+  ctx: any,
+  axisXStart: string,
+  zeroX: number,
+  zeroY: number,
+  list: any,
+  config?: any,
+) => {
+  const {
+    strokeStyle = '#1890ff',
+    lineWidth = 2,
+    scaleSpace,
+    axisYMin,
+    axisYMax,
+    dashLineSpace = 50,
+    dashLineCount = 5,
+    showTooltip,
+  } = config || {};
   const every = (axisYMax - axisYMin) / (dashLineCount - 1);
   ctx.strokeStyle = strokeStyle;
   ctx.lineWidth = lineWidth;
@@ -155,10 +190,10 @@ export const drawChartLines = (ctx: any, axisXStart: string, zeroX: number, zero
   list.forEach((item: any) => {
     const len = moment(item.dt).diff(axisXStart, 'days');
     const pointX = zeroX + len * scaleSpace;
-    const pointY = zeroY -  ((item.value - (axisYMin - every))/every) * dashLineSpace;
+    const pointY = zeroY - ((item.value - (axisYMin - every)) / every) * dashLineSpace;
     ctx.lineTo(pointX, pointY);
     // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
-    showTooltip('line',{x:pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item)
+    showTooltip('line', { x: pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item);
   });
   ctx.stroke();
 };

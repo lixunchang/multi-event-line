@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { ETooltipStatus } from '../../type';
 import styles from './index.less';
 
@@ -9,9 +9,10 @@ interface IProps {
   desc: string;
   label?: string;
   type: ETooltipStatus;
+  guideLineStyle: CSSProperties;
 }
 export default React.memo(
-  ({ location, pointLocation, title, desc, type, label }: IProps) => {
+  ({ location, pointLocation, title, desc, type, label, guideLineStyle }: IProps) => {
     if (!location || !title || type === ETooltipStatus.NOTHING) return null;
     return (
       <>
@@ -24,10 +25,13 @@ export default React.memo(
         </div>
         {type === ETooltipStatus.LINE && pointLocation && (
           <>
-            <span className={styles.tooltipLine} style={{ left: pointLocation?.x }} />
+            <span
+              className={styles.tooltipLine}
+              style={{ left: pointLocation?.x - 1, ...guideLineStyle }}
+            />
             <span
               className={styles.linePoint}
-              style={{ left: pointLocation?.x - 3, top: pointLocation?.y - 2 }}
+              style={{ left: pointLocation?.x - 4, top: pointLocation?.y - 4 }}
             />
           </>
         )}
