@@ -12,6 +12,13 @@
     "test:coverage": "umi-test --coverage",
     "prepublishOnly": "npm run build"
   },
+  "sideEffects": [
+    "dist/",
+    "es/**/style/",
+    "lib//style/*",
+    "src//style/",
+    ".less"
+  ],
   "files": [
     "dist"
   ],
