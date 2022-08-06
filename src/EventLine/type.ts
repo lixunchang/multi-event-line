@@ -1,6 +1,6 @@
 export interface IEventItem {
-  start: string;
-  end?: string;
+  startDate?: string;
+  endDate?: string;
   title: string;
   desc?: string;
   [_: string]: any;

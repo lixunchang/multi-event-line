@@ -58,7 +58,7 @@ export default React.memo(
       eventStyle: { ...defaultConfig?.eventStyle, ...customConfig?.eventStyle },
       lineStyle: { ...defaultConfig?.lineStyle, ...customConfig?.lineStyle },
     };
-    const [paddingTop = 0, paddingRight, paddingLeft, paddingBottom = 25] = config?.padding || {};
+    const [paddingTop = 0, paddingRight, paddingBottom = 25, paddingLeft] = config?.padding || [];
     const { width: eventTypeWidth, height: eventTypeHeight } = config?.eventTypeStyle || {};
     const { height: axisXHeight } = config?.axis || {};
     const { height: eventHeight, minWidth: eventMinWidth } = config?.eventStyle || {};
@@ -256,7 +256,7 @@ export default React.memo(
     useEffect(() => {
       draw(eventTypeWidth, eventsHeight + paddingTop, mouseMoveX);
     }, [mouseMoveX, mouseXY]);
-    console.log('axisXWidth', axisXWidth, mouseMoveX);
+    // console.log('axisXWidth', axisXWidth, mouseMoveX);
     const canvasHeight = eventsHeight + lineHeight + axisXHeight + paddingTop + paddingBottom;
     return (
       <div className={styles.EventLine}>
