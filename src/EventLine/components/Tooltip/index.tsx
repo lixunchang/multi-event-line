@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { ETooltipStatus } from '../../type';
-import styles from './index.less';
+import './index.css';
 
 interface IProps {
   location: any;
@@ -16,9 +16,9 @@ export default React.memo(
     if (!location || !title || type === ETooltipStatus.NOTHING) return null;
     return (
       <>
-        <div className={styles.Tooltip} style={{ left: location?.x + 10, top: location?.y }}>
-          <div className={styles.title}>{title}</div>
-          <div className={styles.desc}>
+        <div className="Tooltip" style={{ left: location?.x + 10, top: location?.y }}>
+          <div className="title">{title}</div>
+          <div className="desc">
             {type === ETooltipStatus.LINE && label && <span>{label}:</span>}
             <span>{desc}</span>
           </div>
@@ -26,11 +26,11 @@ export default React.memo(
         {type === ETooltipStatus.LINE && pointLocation && (
           <>
             <span
-              className={styles.tooltipLine}
+              className="tooltipLine"
               style={{ left: pointLocation?.x - 1, ...guideLineStyle }}
             />
             <span
-              className={styles.linePoint}
+              className="linePoint"
               style={{ left: pointLocation?.x - 4, top: pointLocation?.y - 4 }}
             />
           </>

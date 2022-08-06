@@ -1,12 +1,8 @@
-// import MultiEventLine from './components/MultiEventLine';
-
-// export default MultiEventLine;
-
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Moment from 'moment';
 import { extendMoment } from 'moment-range';
 import useMouseMove from './hooks/useMouseMove';
-import { EMouseStatus, ETooltipStatus, IEventItem, IEventType, ILineItem, ILocation } from './type';
+import { ETooltipStatus, IEventItem, ILineItem } from './type';
 import { analysisEventLineData, getLineDashYList } from './utils/data';
 import defaultConfig from './defaultConfig';
 import {
@@ -15,8 +11,8 @@ import {
   drawEventRectWidthText,
   drawHorizontalLine,
 } from './utils/draw';
-import styles from './index.less';
 import Tooltip from './components/Tooltip';
+import './index.css';
 
 const moment = extendMoment(Moment as any);
 
@@ -259,7 +255,7 @@ export default React.memo(
     // console.log('axisXWidth', axisXWidth, mouseMoveX);
     const canvasHeight = eventsHeight + lineHeight + axisXHeight + paddingTop + paddingBottom;
     return (
-      <div className={styles.EventLine}>
+      <div className="EventLine">
         <canvas id={id} ref={canvasRef} width="950" height={canvasHeight} />
         <Tooltip
           type={tooltipStatus}

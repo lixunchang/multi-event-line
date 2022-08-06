@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { EMouseStatus, ILocation } from '../type';
 
-const useMouseMove = (selector: string, min, max) => {
+const useMouseMove = (selector: string, min: any, max: any) => {
   const [mouseXY, setMouseXY] = useState<ILocation>();
   const [mouseStatus, setMouseStatus] = useState<EMouseStatus>(EMouseStatus.NOTHING);
   const [moveStartX, setMoveStartX] = useState<number>(0);
@@ -15,6 +15,7 @@ const useMouseMove = (selector: string, min, max) => {
     setMouseStatus(EMouseStatus.DRAGING);
     setMoveStartX(moveXLength + event.clientX - canvas.getBoundingClientRect().left);
   };
+
   const handleMouseMove = (event: any) => {
     const canvas = document.querySelector(selector);
     if (!canvas) {
