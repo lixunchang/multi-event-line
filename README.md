@@ -8,7 +8,9 @@ React 事件线组件：同步展示事件和折线图，并联动。
 
 ### 主要功能：(The main function)
 
-- 展示多个事件（开始结束时间、标题、内容等）； (A lot of events.)
+- 展示多个事件（开始/结束时间、标题、内容等）； (A lot of events.)
+- 支持只有开始时间没有结束时间的的事件；(Event without endDate)
+- 支持设置事件展示最小宽度；(Event min with)
 - 支持事件区分类型展示（展示位置、颜色）；(Multiple types of events)
 - 展示折线（时间，值）；(The line charts)
 - 折线和事件时间同步，并支持同时拖拽滑动；(Synchronously, Drag the slide.)
@@ -25,7 +27,7 @@ React 事件线组件：同步展示事件和折线图，并联动。
 
 ### 二期方向：
 
-- canvas 缩放下载等功能区的实现；
+- canvas 缩放下载等功能区的实现；(Zoom, Download，etc Toolbar.)
 - 折线缩略轴；(The line charts thumbnail.)；
 
 ## 使用指南：( Use guide )
@@ -125,6 +127,8 @@ interface IEventType {
 const defaultConfig: IConfig = {
   // canvas的padding
   padding: [24, 24, 48, 0],
+  // 折线图左侧指示文案
+  lineTitle: '趋势图',
   // 坐标轴
   axis: {
     height: 15,

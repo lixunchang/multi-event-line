@@ -76,8 +76,7 @@ const EVENT_DATA: IEventItem[] = [
   {
     id: 3,
     startDate: '20211209',
-    endDate: '20220102',
-    title: '事件文本三',
+    title: '三:没有结束时间',
     desc: '20211209事件详情20220102',
     type: 'two', //事件类型
   },
@@ -137,7 +136,7 @@ export default () => (
       ),
       line: '上证指数',
     }}
-    config={{ eventStyle: {}, lineStyle: {} }}
+    config={{ lineTitle: '趋势图', eventStyle: { minWidth: 250, radius: 4 }, lineStyle: {} }}
   />
 );
 ```
@@ -244,6 +243,7 @@ const defaultConfig: IConfig = {
     // 事件样式
     height: 30,
     minWidth: 60,
+    radius: 4,
     textStyle: {
       font: '14px "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',
     },

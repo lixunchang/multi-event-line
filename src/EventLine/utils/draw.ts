@@ -230,12 +230,15 @@ export const drawActiveEventGuides = (
   axisY: number,
   style: Record<string, any> = {},
 ) => {
-  ctx.strokeStyle = style?.strokeStyle || 'red';
+  const { strokeStyle = 'red', rectRadius = 2 } = style || {};
+  ctx.strokeStyle = strokeStyle;
   // ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(x, y);
   ctx.lineTo(x, axisY);
-  ctx.moveTo(x + w, y);
-  ctx.lineTo(x + w, axisY);
+  if (w !== 0) {
+    ctx.moveTo(x + w, y);
+    ctx.lineTo(x + w, axisY);
+  }
   ctx.stroke();
 };

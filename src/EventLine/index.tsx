@@ -52,7 +52,6 @@ export default React.memo(
     config: customConfig,
   }: IProps) => {
     const withLine = lines?.length > 0; // 是否展示折线
-    const eventTypes = [eventType0, ...eTypes];
     const config = {
       ...defaultConfig,
       ...customConfig,
@@ -63,6 +62,8 @@ export default React.memo(
       eventStyle: { ...defaultConfig?.eventStyle, ...customConfig?.eventStyle },
       lineStyle: { ...defaultConfig?.lineStyle, ...customConfig?.lineStyle },
     };
+
+    const eventTypes = [{ ...eventType0, label: config.lineTitle }, ...eTypes];
     const [paddingTop = 0, paddingRight, paddingBottom = 25, paddingLeft] = config?.padding || [];
     const { width: eventTypeWidth, height: eventTypeHeight } = config?.eventTypeStyle || {};
     const { height: axisXHeight } = config?.axis || {};
@@ -207,7 +208,7 @@ export default React.memo(
     const drawEvents = (offsetX: number, offsetY: number) => {
       const context = getContext();
       const { scale, fieldNames, eventStyle } = config;
-      const { minWidth, height } = eventStyle;
+      const { minWidth, height, radius } = eventStyle;
       const {
         eventStartField,
         eventEndField,
@@ -226,7 +227,14 @@ export default React.memo(
         const count = moment(item?.[eventEndField]).diff(moment(item?.[eventStartField]), 'days');
         const rectX = offsetX + rangeStartX * scale.space;
         const rectY = offsetY - eventTypeHeight * (eventTypes.length - sort); // 使用事件类型高度
-        const rectW = count * scale.space;
+        let rectW = count * scale.space;
+        let guideW = count * scale.space;
+        if (!item?.[eventEndField] || rectW < minWidth) {
+          if (!item?.[eventEndField]) {
+            guideW = 0;
+          }
+          rectW = minWidth;
+        }
         const rectH = height;
         const isActive = showTooltip(
           ETooltipStatus.EVENT,
@@ -242,6 +250,18 @@ export default React.memo(
             activeEvent();
           }
           activeEvent = () => {
+            if (activeEventId === (item?.[eventUniqueField] || `mel_id_${index}`)) {
+              drawActiveEventGuides(
+                context,
+                rectX,
+                rectY + radius,
+                guideW,
+                offsetY + axisXHeight - 4,
+                {
+                  strokeStyle: primaryColor,
+                },
+              );
+            }
             drawEventRectWidthText(
               context,
               rectX, // x
@@ -253,17 +273,13 @@ export default React.memo(
                 strokeStyle: primaryColor,
                 fillStyle: secondaryColor,
                 lineWidth: 2,
+                radius,
                 textStyle: {
                   fillStyle: primaryColor,
                   ...eventStyle.textStyle,
                 },
               },
             );
-            if (activeEventId === (item?.[eventUniqueField] || `mel_id_${index}`)) {
-              drawActiveEventGuides(context, rectX, rectY, rectW, offsetY + axisXHeight - 4, {
-                strokeStyle: primaryColor,
-              });
-            }
           };
           return;
         }
@@ -278,6 +294,7 @@ export default React.memo(
             strokeStyle: primaryColor,
             fillStyle: secondaryColor,
             lineWidth: 2,
+            radius,
             textStyle: {
               fillStyle: primaryColor,
               ...eventStyle.textStyle,
