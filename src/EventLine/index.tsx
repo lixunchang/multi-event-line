@@ -310,12 +310,15 @@ export default React.memo(
     };
 
     useEffect(() => {
+      const ele = document.querySelector('.EventLine');
+      canvasRef.current.width = ele?.clientWidth;
+      // canvasRef.current.height = ele?.clientHeight;
       draw(eventTypeWidth, eventsHeight + paddingTop, mouseMoveX);
     }, [mouseMoveX, mouseXY, mouseStatus, activeEventId]);
     const canvasHeight = eventsHeight + lineHeight + axisXHeight + paddingTop + paddingBottom;
     return (
       <div className="EventLine">
-        <canvas id={id} ref={canvasRef} width="950" height={canvasHeight} />
+        <canvas id={id} ref={canvasRef} width="900" height={canvasHeight} />
         <Tooltip
           type={tooltipStatus}
           location={mouseXY}

@@ -16,15 +16,16 @@ React 事件线组件：同步展示事件和折线图，并联动。
 - 事件选择；(Select event.)；
 - 自定义 tooltip；（To custom tooltip）
 - 绘制事件圆角边框；(Draw rect radius)
-- 鼠标滚轮滚动、触摸板左右移动；(Move with mouse)
+- 鼠标滚轮滚动、触摸板双指左右滑动；(Move with mouse)
+- 宽度自动获取父级宽度；（Width Auto width）
 
 ### 体验 Demo
 
 - StackBlitz demo 地址：https://stackblitz.com/edit/multi-event-line-demo?file=App.tsx
 
-### 开发中：
+### 二期方向：
 
-- 宽度自动获取父级宽度；（Width Auto width）
+- canvas 缩放下载等功能区的实现；
 - 折线缩略轴；(The line charts thumbnail.)；
 
 ## 使用指南：( Use guide )
@@ -122,14 +123,15 @@ interface IEventType {
 // 默认配置，目前只支持这么多，更多配置在开发中
 
 const defaultConfig: IConfig = {
-  padding: [0, 0, 25, 0], // canvas的padding
+  // canvas的padding
+  padding: [24, 24, 48, 0],
+  // 坐标轴
   axis: {
-    // 坐标轴
     height: 15,
     color: '#666',
   },
+  // x轴刻度
   scale: {
-    // 刻度
     lineWidth: 1,
     space: 10,
     textSpace: 6,
@@ -141,34 +143,38 @@ const defaultConfig: IConfig = {
     thirdHeight: 6,
     thirdColor: '#999',
   },
+  // events, lines数据别名
   fieldNames: {
-    // 字段别名
+    eventUniqueField: 'id',
     eventTitleField: 'title',
-    eventStart: 'startDate',
-    eventEnd: 'endDate',
+    eventStartField: 'startDate',
+    eventEndField: 'endDate',
     eventSeriesField: 'type',
+    lineUniqueField: 'id',
     lineXField: 'dt',
     lineYField: 'value',
     lineSeriesField: 'type',
   },
+  // 事件类型样式
   eventTypeStyle: {
-    // 事件类型样式
     width: 100,
     height: 40,
     textStyle: {
       font: 'bold 14px "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',
     },
   },
+  // 事件样式
   eventStyle: {
-    // 事件样式
     height: 30,
     minWidth: 60,
+    radius: 4,
     textStyle: {
+      fillStyle: '#fff',
       font: '14px "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',
     },
   },
+  // 折线样式
   lineStyle: {
-    // 折线样式
     yScaleSpace: 50, // 通过space乘以count获取折线的高度
     yScaleCount: 6,
   },

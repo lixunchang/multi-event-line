@@ -44,7 +44,7 @@ export default {
     },
   },
   lineStyle: {
-    yScaleSpace: 50, // 通过space乘以count获取折线的高度
+    yScaleSpace: 50, // 通过yScaleSpace乘以yScaleCount获取趋势图内容的高度
     yScaleCount: 6,
   },
 };
