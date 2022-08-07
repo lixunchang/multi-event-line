@@ -128,7 +128,16 @@ export default () => (
     events={EVENT_DATA}
     eventTypes={eventTypes}
     lines={LINELIST}
-    config={{ eventStyle: {} }}
+    customTooltip={{
+      event: (data, location) => (
+        <div>
+          <div>事件名称:{data.title}</div>
+          <i>详情：{data.desc}</i>
+        </div>
+      ),
+      line: '上证指数',
+    }}
+    config={{ eventStyle: {}, lineStyle: {} }}
   />
 );
 ```

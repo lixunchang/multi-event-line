@@ -1,5 +1,5 @@
 export default {
-  padding: [0, 0, 25, 0], // canvas的padding
+  padding: [24, 24, 48, 0], // canvas的padding
   axis: {
     height: 15,
     color: '#666',
@@ -17,10 +17,12 @@ export default {
     thirdColor: '#999',
   },
   fieldNames: {
+    eventUniqueField: 'id',
     eventTitleField: 'title',
-    eventStart: 'startDate',
-    eventEnd: 'endDate',
+    eventStartField: 'startDate',
+    eventEndField: 'endDate',
     eventSeriesField: 'type',
+    lineUniqueField: 'id',
     lineXField: 'dt',
     lineYField: 'value',
     lineSeriesField: 'type',
@@ -35,6 +37,7 @@ export default {
   eventStyle: {
     height: 30,
     minWidth: 60,
+    radius: 4,
     textStyle: {
       fillStyle: '#fff',
       font: '14px "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',

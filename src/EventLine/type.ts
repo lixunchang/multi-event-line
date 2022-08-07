@@ -21,9 +21,13 @@ export interface IEventType {
 }
 
 export enum EMouseStatus {
-  NOTHING = 'nothing',
-  DRAGING = 'draging',
-  MOVEING = 'moveing',
+  NONE = 'none',
+  DRAG = 'drag',
+  HOVER = 'hover',
+  CLICK = 'click',
+  DOWN = 'down',
+  MOVE = 'move',
+  UP = 'up',
 }
 
 export interface ILocation {

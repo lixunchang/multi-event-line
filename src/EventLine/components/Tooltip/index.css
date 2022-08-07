@@ -2,7 +2,7 @@
   position: absolute;
   z-index: 9;
   min-width: 90px;
-  padding: 16px;
+  padding: 14px;
   background: white;
   background-color: #fff;
   background-clip: padding-box;
@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #777;
+  color: #999;
   font-size: 12px;
 }
 

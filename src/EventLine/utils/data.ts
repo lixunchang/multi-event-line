@@ -5,7 +5,7 @@ export const getLineDashYList = (count: number, space: number) => {
   for (let i = 1; i < count; i++) {
     dashList.push(i * space);
   }
-  return dashList;
+  return dashList.reverse();
 };
 
 export const analysisEventData = (events: any, fieldNames: any = {}) => {
@@ -20,7 +20,7 @@ export const analysisEventData = (events: any, fieldNames: any = {}) => {
 // TODO seriesField 暂未开发
 export const analysisLineData = (lines: any, fieldNames: any = {}) => {
   const { lineXField = 'dt', lineYField = 'value', lineSeriesField = 'type' } = fieldNames || {};
-  return lines.reduce(({ minDt, maxDt, minValue, maxValue }: any, event: any) => {
+  return lines?.reduce(({ minDt, maxDt, minValue, maxValue }: any, event: any) => {
     return {
       minDt: Math.min(minDt || parseInt(event?.[lineXField]), parseInt(event?.[lineXField])),
       maxDt: Math.max(maxDt || 0, parseInt(event?.[lineXField])),
@@ -67,8 +67,8 @@ export const analysisEventLineData = (
     minValue: lineMinValue,
     maxValue: lineMaxValue,
   } = analysisLineData(lines, { lineXField, lineYField, lineSeriesField });
-  const minDate = `${Math.min(eventMinDate, lineMinDate)}`;
-  const maxDate = `${Math.max(eventMaxDate, lineMaxDate)}`;
+  const minDate = `${Math.min(eventMinDate, lineMinDate || eventMinDate)}`; //存在折线没有数据的情况
+  const maxDate = `${Math.max(eventMaxDate, lineMaxDate || eventMaxDate)}`;
   const axisXStart = moment(minDate).subtract(forward, unit).format('YYYYMMDD');
   const axisXEnd = moment(maxDate).add(behind, unit).format('YYYYMMDD');
   const axisXTotal = moment(axisXEnd).diff(moment(axisXStart), unit);
