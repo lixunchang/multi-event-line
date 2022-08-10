@@ -44,15 +44,18 @@ export const analysisLineData = (lines: any, fieldNames: any = {}) => {
 
 // 向上取整十，整百，整千，整万
 export const turnNumber = (value: number, method: 'ceil' | 'floor' = 'ceil') => {
+  if (value === 0) return 0;
+  let absValue = Math.abs(value);
+  let plusMinus = value / absValue;
   let bite = 0;
-  if (value < 10) {
-    return 10;
+  if (absValue < 10) {
+    return method === 'ceil' ? 10 : 0;
   }
-  while (value >= 10) {
+  while (absValue >= 10) {
     value /= 10;
     bite += 1;
   }
-  return Math[method](value) * Math.pow(10, bite);
+  return Math[method](absValue) * Math.pow(10, bite);
 };
 
 export const analysisEventLineData = (
