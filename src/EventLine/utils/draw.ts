@@ -1,5 +1,24 @@
 import moment from 'moment';
 
+export const roundRectPath = (
+  ctx: any,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number = 0,
+) => {
+  ctx.beginPath();
+  ctx.arc(x + r, y + r, r, Math.PI, (3 * Math.PI) / 2);
+  ctx.lineTo(x + w - r, y);
+  ctx.arc(x + w - r, y + r, r, (3 * Math.PI) / 2, 2 * Math.PI);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arc(x + w - r, y + h - r, r, 0, Math.PI / 2);
+  ctx.lineTo(x + r, y + h);
+  ctx.arc(x + r, y + h - r, r, Math.PI / 2, Math.PI);
+  ctx.closePath();
+};
+
 // 绘制水平线
 export const drawHorizontalLine = (
   ctx: any,
@@ -23,10 +42,8 @@ export const drawHorizontalLine = (
     axisYMin,
   } = config;
   ctx.lineWidth = lineWidth;
-  ctx.strokeStyle = '#999';
-  strokeStyle;
-  ctx.fillStyle = '#999';
-  fillStyle;
+  ctx.strokeStyle = strokeStyle;
+  ctx.fillStyle = fillStyle;
   //TOOD 折线辅助性值
   const every = (axisYMax - axisYMin) / (offsetYs.length - 1);
   offsetYs.forEach((offsetY, i) => {
@@ -46,6 +63,22 @@ export const drawHorizontalLine = (
     ctx.setLineDash([]);
   });
   ctx.lineDashOffset = 0;
+};
+
+export const drawYAxisValue = (
+  ctx: any,
+  offsetX: number,
+  list: number[],
+  { min, max, fontSize = 12, formatter, fillStyle = '#999', maxWidth = 90 }: any,
+) => {
+  ctx.fillStyle = fillStyle;
+  ctx.font = `${fontSize}px Airal`;
+  const every = (max - min) / (list.length - 1);
+  list.forEach((y, i) => {
+    const text = formatter(min + every * i);
+    console.log('xxx', min, every * i, text);
+    ctx.fillText(text, offsetX - (text + '').length * fontSize, y, maxWidth);
+  });
 };
 
 /**
@@ -152,14 +185,19 @@ export const drawEventRectWidthText = (
   const {
     strokeStyle = '#fff',
     fillStyle = '#1890ff',
+    radius = 4,
     lineWidth = 2,
     textStyle = {},
   } = style || {};
   ctx.strokeStyle = strokeStyle;
   ctx.fillStyle = fillStyle;
   ctx.lineWidth = lineWidth;
-  ctx.strokeRect(x, y, w, h);
-  ctx.fillRect(x, y, w, h);
+  // 圆角
+  roundRectPath(ctx, x, y, w, h, radius);
+  // ctx.strokeRect(x, y, w, h);
+  // ctx.fillRect(x, y, w, h);]
+  ctx.stroke();
+  ctx.fill();
   if (text) {
     createTextInSchedule(ctx, x + 8, y + h / 2, w, text || '', { ...textStyle });
   }
@@ -190,10 +228,31 @@ export const drawChartLines = (
   list.forEach((item: any) => {
     const len = moment(item.dt).diff(axisXStart, 'days');
     const pointX = zeroX + len * scaleSpace;
-    const pointY = zeroY - ((item.value - (axisYMin - every)) / every) * dashLineSpace;
+    const pointY = zeroY - ((item.value - axisYMin) / every) * dashLineSpace;
     ctx.lineTo(pointX, pointY);
     // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
     showTooltip('line', { x: pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item);
   });
+  ctx.stroke();
+};
+
+export const drawActiveEventGuides = (
+  ctx: any,
+  x: number,
+  y: number,
+  w: number,
+  axisY: number,
+  style: Record<string, any> = {},
+) => {
+  const { strokeStyle = 'red', rectRadius = 2 } = style || {};
+  ctx.strokeStyle = strokeStyle;
+  // ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x, axisY);
+  if (w !== 0) {
+    ctx.moveTo(x + w, y);
+    ctx.lineTo(x + w, axisY);
+  }
   ctx.stroke();
 };

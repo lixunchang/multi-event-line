@@ -76,8 +76,7 @@ const EVENT_DATA: IEventItem[] = [
   {
     id: 3,
     startDate: '20211209',
-    endDate: '20220102',
-    title: '事件文本三',
+    title: '三:没有结束时间',
     desc: '20211209事件详情20220102',
     type: 'two', //事件类型
   },
@@ -104,21 +103,29 @@ const LINELIST: ILineItem[] = [
     id: 1,
     dt: '20211201',
     value: 400,
+    rate: 1,
+    type: 'A',
   },
   {
     id: 2,
     dt: '20211214',
     value: 600,
+    rate: 0.5,
+    type: 'B',
   },
   {
     id: 3,
     dt: '20220101',
-    value: 200,
+    value: 0,
+    rate: 0.8,
+    type: 'A',
   },
   {
     id: 4,
     dt: '20220215',
     value: 500,
+    rate: 0.1,
+    type: 'B',
   },
 ];
 
@@ -128,7 +135,16 @@ export default () => (
     events={EVENT_DATA}
     eventTypes={eventTypes}
     lines={LINELIST}
-    config={{ eventStyle: {} }}
+    customTooltip={{
+      event: (data, location) => (
+        <div>
+          <div>事件名称:{data.title}</div>
+          <i>详情：{data.desc}</i>
+        </div>
+      ),
+      line: '上证指数',
+    }}
+    config={{ lineTitle: '趋势图', eventStyle: { minWidth: 250, radius: 4 }, lineStyle: {} }}
   />
 );
 ```
@@ -140,14 +156,15 @@ export default () => (
 - 展示折线（时间，值）；(The line charts)
 - 折线和事件时间同步，并支持同时拖拽滑动；(Synchronously, Drag the slide.)
 - 鼠标 hover 查看事件/折线详细信息；(Mouse hover)
-
-## 开发中：
-
 - 自定义 tooltip；（To custom tooltip）
 - 绘制圆角长方形；(Draw rect radius)
 - 宽度自动获取父级宽度；（Width Auto width）
 - 鼠标滚轮滚动，触摸板左右移动；(Move with mouse)
 - 事件选择；(Select event.)；
+
+## 开发中：
+
+- fieldNames 字段检查；
 - 折线缩略轴；(The line charts thumbnail.)；
 
 ## 安装 Install
@@ -235,6 +252,7 @@ const defaultConfig: IConfig = {
     // 事件样式
     height: 30,
     minWidth: 60,
+    radius: 4,
     textStyle: {
       font: '14px "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif',
     },
