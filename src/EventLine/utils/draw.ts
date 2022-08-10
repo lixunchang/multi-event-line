@@ -19,6 +19,17 @@ export const roundRectPath = (
   ctx.closePath();
 };
 
+export const drawYAxisText = (ctx: any, offsetX = 0, offsetYs: number[] = [], config: any = {}) => {
+  const { axisYMin, axisYMax, font, formatter, width, space = 4 } = config;
+  const every = (axisYMax - axisYMin) / (offsetYs.length - 1);
+  offsetYs.forEach((offsetY, i) => {
+    const text = formatter(axisYMin + every * i);
+    const textWidth = ctx.measureText(text).width;
+    ctx.font = font;
+    ctx.fillText(text, offsetX - (width - space || textWidth + space), offsetY, 120); // (len > 2 ? len * 12 - 8 : 26)
+  });
+};
+
 // 绘制水平线
 export const drawHorizontalLine = (
   ctx: any,
@@ -28,57 +39,29 @@ export const drawHorizontalLine = (
 ) => {
   const {
     axisXData,
-    // lineMinValue,
-    // lineMaxValue,
     lineWidth = 1,
     strokeStyle = '#999',
-    fillStyle = '#999',
     isDashLine = false,
-    isAxis = false,
-    lineDash = [5, 5],
-    lineDashOffset = 0,
-    scale,
-    axisYMax,
-    axisYMin,
+    dash = [5, 5],
+    offset = 0,
+    scaleSpace,
   } = config;
   ctx.lineWidth = lineWidth;
   ctx.strokeStyle = strokeStyle;
-  ctx.fillStyle = fillStyle;
-  //TOOD 折线辅助性值
-  const every = (axisYMax - axisYMin) / (offsetYs.length - 1);
+
   offsetYs.forEach((offsetY, i) => {
     ctx.beginPath();
     ctx.lineDashOffset = 0;
-    if (isDashLine) {
-      ctx.setLineDash(lineDash);
-      ctx.lineDashOffset = lineDashOffset;
+    if (isDashLine && i !== 0) {
+      ctx.setLineDash(dash);
+      ctx.lineDashOffset = offset;
     }
     ctx.moveTo(offsetX, offsetY);
-    ctx.lineTo(offsetX + (axisXData.length - 1) * scale.space, offsetY);
-    // ctx.closePath();
-    ctx.stroke(); //坐标轴
-    if (!isAxis) {
-      ctx.fillText(axisYMin + every * i, offsetX - 36, offsetY, 90);
-    }
+    ctx.lineTo(offsetX + (axisXData.length - 1) * scaleSpace, offsetY);
+    ctx.stroke();
     ctx.setLineDash([]);
   });
   ctx.lineDashOffset = 0;
-};
-
-export const drawYAxisValue = (
-  ctx: any,
-  offsetX: number,
-  list: number[],
-  { min, max, fontSize = 12, formatter, fillStyle = '#999', maxWidth = 90 }: any,
-) => {
-  ctx.fillStyle = fillStyle;
-  ctx.font = `${fontSize}px Airal`;
-  const every = (max - min) / (list.length - 1);
-  list.forEach((y, i) => {
-    const text = formatter(min + every * i);
-    console.log('xxx', min, every * i, text);
-    ctx.fillText(text, offsetX - (text + '').length * fontSize, y, maxWidth);
-  });
 };
 
 /**
@@ -143,7 +126,7 @@ export const drawAxisScale = (
     const { height, color, text, textHalfWidth } = judgeDayScaleStyle(item, scale);
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
-    ctx.font = '10px microsoft yahe';
+    ctx.font = '10px PingFang SC';
     ctx.textBaseline = 'middle';
     ctx.beginPath();
     ctx.moveTo(offsetX + i * scale.space, offsetY);
@@ -164,12 +147,49 @@ const createTextInSchedule = (
   text: string,
   style?: Record<string, any>,
 ) => {
-  const { font = '16px microsoft yahe', fillStyle = '#fff', textBaseline = 'middle' } = style || {};
+  const {
+    font = '16px PingFang SC',
+    fillStyle = '#fff',
+    textBaseline = 'middle',
+    direction,
+    paddingLeft = 8,
+    paddingRight = 8,
+  } = style || {};
   ctx.font = font;
   ctx.fillStyle = fillStyle;
   ctx.textBaseline = textBaseline;
-  // ctx.measureText(text).width
-  ctx.fillText(text, x, y, maxWidth);
+  if (direction === 'vertical') {
+    fillTextVertical(ctx, x + paddingLeft, y, text, { font, space: 6 });
+  } else {
+    const limitText = limitTextWidth(ctx, text, maxWidth - paddingLeft - paddingRight);
+    ctx.fillText(limitText, x + paddingLeft, y, maxWidth);
+  }
+};
+
+/**
+ * 文本超出最大宽度限制...
+ * @param ctx
+ * @param text
+ * @param limit
+ * @param ellipsis
+ * @returns
+ */
+export const limitTextWidth = (ctx: any, text: string, limit: number, ellipsis = '...') => {
+  const textWidth = ctx.measureText(text).width;
+  if (textWidth < limit) {
+    return text;
+  }
+  const ellipsisWidth = ctx.measureText(ellipsis).width;
+  const limitWidth = limit - ellipsisWidth;
+  return (
+    [...text].reduce((result = '', item: string) => {
+      const currentWidth = ctx.measureText(result + item).width;
+      if (currentWidth < limitWidth) {
+        return result + item;
+      }
+      return result;
+    }, '') + ellipsis
+  );
 };
 
 export const drawEventRectWidthText = (
@@ -199,7 +219,8 @@ export const drawEventRectWidthText = (
   ctx.stroke();
   ctx.fill();
   if (text) {
-    createTextInSchedule(ctx, x + 8, y + h / 2, w, text || '', { ...textStyle });
+    console.log('text==', text);
+    createTextInSchedule(ctx, x, y + h / 2, w, text || '', { ...textStyle });
   }
 };
 
@@ -220,19 +241,23 @@ export const drawChartLines = (
     dashLineSpace = 50,
     dashLineCount = 5,
     showTooltip,
+    dtKey = 'dt',
+    valueKey = 'value',
   } = config || {};
   const every = (axisYMax - axisYMin) / (dashLineCount - 1);
   ctx.strokeStyle = strokeStyle;
   ctx.lineWidth = lineWidth;
   ctx.beginPath();
-  list.forEach((item: any) => {
-    const len = moment(item.dt).diff(axisXStart, 'days');
-    const pointX = zeroX + len * scaleSpace;
-    const pointY = zeroY - ((item.value - axisYMin) / every) * dashLineSpace;
-    ctx.lineTo(pointX, pointY);
-    // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
-    showTooltip('line', { x: pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item);
-  });
+  list
+    .sort((a: any, b: any) => a?.[dtKey] - b?.[dtKey])
+    .forEach((item: any) => {
+      const len = moment(item?.[dtKey]).diff(axisXStart, 'days');
+      const pointX = zeroX + len * scaleSpace;
+      const pointY = zeroY - ((item?.[valueKey] - axisYMin) / every) * dashLineSpace;
+      ctx.lineTo(pointX, pointY);
+      // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
+      showTooltip('line', { x: pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item);
+    });
   ctx.stroke();
 };
 
@@ -244,9 +269,9 @@ export const drawActiveEventGuides = (
   axisY: number,
   style: Record<string, any> = {},
 ) => {
-  const { strokeStyle = 'red', rectRadius = 2 } = style || {};
+  const { strokeStyle = '#eee', rectRadius = 2 } = style || {};
   ctx.strokeStyle = strokeStyle;
-  // ctx.lineWidth = 1;
+  ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(x, y);
   ctx.lineTo(x, axisY);
@@ -255,4 +280,41 @@ export const drawActiveEventGuides = (
     ctx.lineTo(x + w, axisY);
   }
   ctx.stroke();
+};
+
+export const fillTextVertical = (
+  ctx: any,
+  offsetX: number,
+  offsetY: number,
+  text: string,
+  { font = '14 PingFang SC', space = 2 },
+) => {
+  [...text].forEach((t, i) => {
+    ctx.fillText(t, offsetX, offsetY + i * (parseInt(font) + space));
+  });
+};
+
+export const drawLegend = (
+  ctx: any,
+  offsetX: number,
+  offsetY: number,
+  { legend, font, lineColor = [] }: any,
+) => {
+  let prevLength = 0;
+  [...legend.label].reverse().forEach((label: string, i: number) => {
+    const width = ctx.measureText(label).width + legend.labelSpace;
+    const offX = offsetX - prevLength - width;
+    ctx.fillStyle = [...lineColor].reverse()[i];
+    ctx.fillRect(
+      offX - legend.height - legend.labelRectSpace,
+      offsetY + legend.marginTop,
+      legend.height,
+      legend.height,
+    );
+    ctx.fillStyle = legend.color;
+    ctx.font = font;
+    ctx.textBaseline = 'top';
+    ctx.fillText(label, offX, offsetY + legend.marginTop);
+    prevLength = prevLength + width + legend.height + legend.labelRectSpace;
+  });
 };
