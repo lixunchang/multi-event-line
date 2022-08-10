@@ -149,7 +149,7 @@ export const combineConfig = (defaultConfig: IConfig, customConfig: IConfig) => 
         x: {
           ...defaultConfig.event.axis.x,
           ...(customConfig?.event?.axis?.x || {}),
-          unit: customConfig.axisX.unit || defaultConfig.axisX.unit,
+          unit: customConfig?.axisX?.unit || defaultConfig.axisX.unit,
           scale: {
             ...defaultConfig.event.axis.x.scale,
             ...(customConfig?.event?.axis?.x?.scale || {}),
@@ -180,7 +180,7 @@ export const combineConfig = (defaultConfig: IConfig, customConfig: IConfig) => 
         x: {
           ...defaultConfig.line.axis.x,
           ...(customConfig?.line?.axis?.x || {}),
-          unit: customConfig.axisX.unit || defaultConfig.axisX.unit,
+          unit: customConfig?.axisX?.unit || defaultConfig.axisX.unit,
           scale: {
             ...defaultConfig.line.axis.x.scale,
             ...(customConfig?.line?.axis?.x?.scale || {}),

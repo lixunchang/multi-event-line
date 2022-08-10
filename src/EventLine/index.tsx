@@ -177,7 +177,7 @@ export default React.memo(
           offsetY + lineHeight + axisXheight,
           moveX,
           { ...axisX.scale, ...line.axis.x.scale },
-          '#999',
+          line.axis.x.lineColor || '#999',
         ); // + 间距
       // 画事件类型 不加间距
       drawEventTypes(offsetX, offsetY);
@@ -202,6 +202,7 @@ export default React.memo(
             axisYMin: axisYMin,
             ...line.axis.y.left,
             fillStyle: line.axis.y.left.color,
+            font: `${line.axis.y.left.fontSize}px ${font}`,
           });
         }
 
@@ -227,6 +228,7 @@ export default React.memo(
             ...line.axis.y.right,
             width: line.axis.y.right.width + paddingRight,
             fillStyle: line.axis.y.right.color,
+            font: `${line.axis.y.right.fontSize}px ${font}`,
           });
         }
         drawLegend(
@@ -236,7 +238,7 @@ export default React.memo(
           {
             lineColor: line.lineColor,
             legend: line.legend,
-            font: '12px "PingFang SC", Airal',
+            font: `${line.legend.fontSize}px ${font}`,
           },
         );
       }
@@ -369,7 +371,7 @@ export default React.memo(
                 lineWidth: 2,
                 radius,
                 textStyle: {
-                  font: event.font,
+                  font: `${event.fontSize}px ${font}`,
                   fillStyle: event.color || primaryColor,
                   paddingLeft: event.paddingLeft,
                   paddingRight: event.paddingRight,
@@ -379,7 +381,7 @@ export default React.memo(
           };
           return;
         }
-        console.log('title=', event.fieldNames, item, titleField, item?.[titleField]);
+
         drawEventRectWidthText(
           context,
           rectX, // x
@@ -393,7 +395,7 @@ export default React.memo(
             lineWidth: 2,
             radius,
             textStyle: {
-              font: event.font,
+              font: `${event.fontSize}px ${font}`,
               fillStyle: event.color || primaryColor,
               paddingLeft: event.paddingLeft,
               paddingRight: event.paddingRight,
