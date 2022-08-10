@@ -79,6 +79,7 @@ const useMouseMove = (selector: string, min: any, max: any) => {
       if (max && length > max) {
         length = max;
       }
+      setMouseStatus(EMouseStatus.SCROLL_X);
       setMoveXLength(length);
       return;
     }

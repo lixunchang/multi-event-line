@@ -8,6 +8,22 @@ export default {
     height: 15,
     color: '#666',
   },
+  axisX: {
+    height: 15,
+    color: '#666',
+  },
+  axisY: {
+    value: {
+      width: 40,
+      fontSize: 12,
+      formatter: (num: number) => num,
+    },
+    rate: {
+      width: 40,
+      fontSize: 12,
+      formatter: (num: number) => num,
+    },
+  },
   // x轴刻度
   scale: {
     lineWidth: 1,

@@ -42,10 +42,8 @@ export const drawHorizontalLine = (
     axisYMin,
   } = config;
   ctx.lineWidth = lineWidth;
-  ctx.strokeStyle = '#999';
-  strokeStyle;
-  ctx.fillStyle = '#999';
-  fillStyle;
+  ctx.strokeStyle = strokeStyle;
+  ctx.fillStyle = fillStyle;
   //TOOD 折线辅助性值
   const every = (axisYMax - axisYMin) / (offsetYs.length - 1);
   offsetYs.forEach((offsetY, i) => {
@@ -65,6 +63,22 @@ export const drawHorizontalLine = (
     ctx.setLineDash([]);
   });
   ctx.lineDashOffset = 0;
+};
+
+export const drawYAxisValue = (
+  ctx: any,
+  offsetX: number,
+  list: number[],
+  { min, max, fontSize = 12, formatter, fillStyle = '#999', maxWidth = 90 }: any,
+) => {
+  ctx.fillStyle = fillStyle;
+  ctx.font = `${fontSize}px Airal`;
+  const every = (max - min) / (list.length - 1);
+  list.forEach((y, i) => {
+    const text = formatter(min + every * i);
+    console.log('xxx', min, every * i, text);
+    ctx.fillText(text, offsetX - (text + '').length * fontSize, y, maxWidth);
+  });
 };
 
 /**
@@ -214,7 +228,7 @@ export const drawChartLines = (
   list.forEach((item: any) => {
     const len = moment(item.dt).diff(axisXStart, 'days');
     const pointX = zeroX + len * scaleSpace;
-    const pointY = zeroY - ((item.value - (axisYMin - every)) / every) * dashLineSpace;
+    const pointY = zeroY - ((item.value - axisYMin) / every) * dashLineSpace;
     ctx.lineTo(pointX, pointY);
     // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
     showTooltip('line', { x: pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item);

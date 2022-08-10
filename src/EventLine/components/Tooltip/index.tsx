@@ -19,7 +19,10 @@ export default React.memo(
     const { style, event, line } = customContent || {};
     return (
       <>
-        <div className="Tooltip" style={{ left: location?.x + 10, top: location?.y, ...style }}>
+        <div
+          className="Tooltip"
+          style={{ left: location?.x + 10, top: location?.y + 12, ...style }}
+        >
           {type === ETooltipStatus.LINE && (
             <>
               {typeof line === 'function' ? (

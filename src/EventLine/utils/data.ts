@@ -2,7 +2,7 @@ import moment from 'moment';
 
 export const getLineDashYList = (count: number, space: number) => {
   const dashList: number[] = [];
-  for (let i = 1; i < count; i++) {
+  for (let i = 1; i <= count; i++) {
     dashList.push(i * space);
   }
   return dashList.reverse();
@@ -24,7 +24,7 @@ export const analysisLineData = (lines: any, fieldNames: any = {}) => {
     return {
       minDt: Math.min(minDt || parseInt(event?.[lineXField]), parseInt(event?.[lineXField])),
       maxDt: Math.max(maxDt || 0, parseInt(event?.[lineXField])),
-      minValue: Math.min(minValue || event?.[lineYField], event?.[lineYField]),
+      minValue: Math.min(minValue === 0 ? 0 : minValue || event?.[lineYField], event?.[lineYField]),
       maxValue: Math.max(maxValue || 0, event?.[lineYField]),
     };
   }, {});
@@ -80,7 +80,7 @@ export const analysisEventLineData = (
     axisXWidth: axisXTotal * scale.space,
     axisXTotal,
     axisYMax: turnNumber(lineMaxValue, 'ceil'),
-    axisYMin: turnNumber(lineMinValue, 'floor'),
+    axisYMin: lineMinValue === 0 ? 0 : turnNumber(lineMinValue, 'floor'),
     eventMinDate,
     eventMaxDate,
     lineMinDate,

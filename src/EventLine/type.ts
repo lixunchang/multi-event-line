@@ -23,6 +23,8 @@ export interface IEventType {
 export enum EMouseStatus {
   NONE = 'none',
   DRAG = 'drag',
+  SCROLL_X = 'scroll_x',
+  SCROLL_Y = 'scroll_y',
   HOVER = 'hover',
   CLICK = 'click',
   DOWN = 'down',

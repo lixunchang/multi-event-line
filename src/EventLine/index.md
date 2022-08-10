@@ -103,21 +103,29 @@ const LINELIST: ILineItem[] = [
     id: 1,
     dt: '20211201',
     value: 400,
+    rate: 1,
+    type: 'A',
   },
   {
     id: 2,
     dt: '20211214',
     value: 600,
+    rate: 0.5,
+    type: 'B',
   },
   {
     id: 3,
     dt: '20220101',
-    value: 200,
+    value: 0,
+    rate: 0.8,
+    type: 'A',
   },
   {
     id: 4,
     dt: '20220215',
     value: 500,
+    rate: 0.1,
+    type: 'B',
   },
 ];
 
@@ -148,14 +156,15 @@ export default () => (
 - 展示折线（时间，值）；(The line charts)
 - 折线和事件时间同步，并支持同时拖拽滑动；(Synchronously, Drag the slide.)
 - 鼠标 hover 查看事件/折线详细信息；(Mouse hover)
-
-## 开发中：
-
 - 自定义 tooltip；（To custom tooltip）
 - 绘制圆角长方形；(Draw rect radius)
 - 宽度自动获取父级宽度；（Width Auto width）
 - 鼠标滚轮滚动，触摸板左右移动；(Move with mouse)
 - 事件选择；(Select event.)；
+
+## 开发中：
+
+- fieldNames 字段检查；
 - 折线缩略轴；(The line charts thumbnail.)；
 
 ## 安装 Install

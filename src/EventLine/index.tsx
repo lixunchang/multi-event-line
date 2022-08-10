@@ -11,11 +11,14 @@ import {
   drawChartLines,
   drawEventRectWidthText,
   drawHorizontalLine,
+  drawYAxisValue,
 } from './utils/draw';
 import Tooltip from './components/Tooltip';
 import './index.css';
 
 const moment = extendMoment(Moment as any);
+
+let canvasWidth: number = 960;
 
 interface IProps {
   id?: string;
@@ -88,6 +91,7 @@ export default React.memo(
 
     const { axisXStart, axisXEnd, lineMinValue, lineMaxValue, axisYMax, axisYMin, axisXWidth } =
       analysisEventLineData(events, lines, config);
+    console.log('min', lineMinValue, lineMaxValue);
     const axisXData = Array.from(moment.range(moment(axisXStart), moment(axisXEnd)).by('days')).map(
       (item) => item.format('YYYYMMDD'),
     );
@@ -95,6 +99,15 @@ export default React.memo(
     const { mouseMoveX, mouseXY, mouseStatus } = useMouseMove(`#${id}`, -100, axisXWidth - 200);
 
     const showTooltip = (type: ETooltipStatus, area: IArea, data: any) => {
+      if (
+        mouseStatus === EMouseStatus.DOWN ||
+        mouseStatus === EMouseStatus.DRAG ||
+        mouseStatus === EMouseStatus.SCROLL_X
+      ) {
+        setTooltipStatus(ETooltipStatus.NOTHING);
+        setTooltipData(undefined);
+        return false;
+      }
       if (
         mouseXY &&
         mouseXY.x >= area.x &&
@@ -138,28 +151,31 @@ export default React.memo(
 
     const drawAxisAndLine = (offsetX: number, offsetY: number, moveX: number) => {
       const context = getContext();
+      const { axisY } = config;
       drawXAxis(offsetX, offsetY + axisXHeight, moveX); // + 间距
       withLine && drawXAxis(offsetX, offsetY + lineHeight + axisXHeight, moveX); // + 间距
       // 画事件类型 不加间距
       drawEventTypes(offsetX, offsetY);
+
+      const yGuides = dashLineList.map((val: number) => offsetY + axisXHeight + val);
       // 画辅助线 + 间距
       withLine &&
-        drawHorizontalLine(
-          context,
-          offsetX,
-          dashLineList.map((val: number) => offsetY + axisXHeight + val),
-          {
-            lineWidth: 1,
-            strokeStyle: '#999',
-            isDashLine: true,
-            axisXData,
-            lineMinValue,
-            lineMaxValue,
-            scale: config.scale,
-            axisYMax,
-            axisYMin,
-          },
-        );
+        drawHorizontalLine(context, offsetX, yGuides, {
+          lineWidth: 1,
+          strokeStyle: '#999',
+          isDashLine: true,
+          axisXData,
+          lineMinValue,
+          lineMaxValue,
+          scale: config.scale,
+          axisYMax,
+          axisYMin,
+        });
+      drawYAxisValue(context, canvasWidth, yGuides, {
+        min: axisYMin,
+        max: axisYMax,
+        ...axisY.value,
+      });
     };
 
     const drawEventTypes = (offsetX: number, offsetY: number) => {
@@ -314,6 +330,15 @@ export default React.memo(
         dashLineCount: dashLineList.length,
         showTooltip,
       });
+      // 右Y轴
+      // drawChartLines(context, axisXStart, offsetX, offsetY, lines, {
+      //   scaleSpace: config.scale.space,
+      //   axisYMax,
+      //   axisYMin,
+      //   scaleLineSpace,
+      //   dashLineCount: dashLineList.length,
+      //   showTooltip,
+      // });
     };
 
     const draw = (startX: number, startY: number, moveX: number) => {
@@ -328,7 +353,8 @@ export default React.memo(
 
     useEffect(() => {
       const ele = document.querySelector('.EventLine');
-      canvasRef.current.width = ele?.clientWidth;
+      canvasWidth = ele?.clientWidth;
+      canvasRef.current.width = canvasWidth;
       // canvasRef.current.height = ele?.clientHeight;
       draw(eventTypeWidth, eventsHeight + paddingTop, mouseMoveX);
     }, [mouseMoveX, mouseXY, mouseStatus, activeEventId]);
