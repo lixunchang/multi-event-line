@@ -45,10 +45,8 @@ export enum ETooltipStatus {
 
 export interface IConfig {
   padding: number[]; //同css设置，目前只上下有效，左右待开发
-  axis: Record<string, any>;
-  scale: Record<string, any>;
-  fieldNames: Record<string, any>;
-  eventTypeStyle: Record<string, any>;
-  eventStyle: Record<string, any>;
-  lineStyle: Record<string, any>;
+  font: string;
+  axisX: Record<string, any>;
+  event: any;
+  line: any;
 }
