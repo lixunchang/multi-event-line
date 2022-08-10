@@ -7,10 +7,10 @@
 /yarn.lock
 /package-lock.json
 
-# production
+# production git rm -r --cached dist
 /es
 /docs-dist
-
+/dist/
 # misc
 .DS_Store
 /coverage

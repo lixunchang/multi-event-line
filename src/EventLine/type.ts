@@ -1,6 +1,6 @@
 export interface IEventItem {
-  start: string;
-  end?: string;
+  startDate?: string;
+  endDate?: string;
   title: string;
   desc?: string;
   [_: string]: any;
@@ -21,9 +21,15 @@ export interface IEventType {
 }
 
 export enum EMouseStatus {
-  NOTHING = 'nothing',
-  DRAGING = 'draging',
-  MOVEING = 'moveing',
+  NONE = 'none',
+  DRAG = 'drag',
+  SCROLL_X = 'scroll_x',
+  SCROLL_Y = 'scroll_y',
+  HOVER = 'hover',
+  CLICK = 'click',
+  DOWN = 'down',
+  MOVE = 'move',
+  UP = 'up',
 }
 
 export interface ILocation {
@@ -39,10 +45,8 @@ export enum ETooltipStatus {
 
 export interface IConfig {
   padding: number[]; //同css设置，目前只上下有效，左右待开发
-  axis: Record<string, any>;
-  scale: Record<string, any>;
-  fieldNames: Record<string, any>;
-  eventTypeStyle: Record<string, any>;
-  eventStyle: Record<string, any>;
-  lineStyle: Record<string, any>;
+  font: string;
+  axisX: Record<string, any>;
+  event: any;
+  line: any;
 }
