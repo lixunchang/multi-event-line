@@ -19,8 +19,8 @@ React 复合事件线组件：同时展示多种类型事件和关键指标折�
 
 ```tsx
 import React from 'react';
-import type { IEventType, IEventItem, ILineItem } from 'multi-event-line';
-import EventLine from 'multi-event-line';
+import type { IEventType, IEventItem, ILineItem } from '@alipay/bank-vis';
+import { EventLine } from '@alipay/bank-vis';
 
 const eventTypes: IEventType[] = [
   {
@@ -63,137 +63,344 @@ const eventTypes: IEventType[] = [
 const EVENT_DATA: IEventItem[] = [
   {
     id: 1,
-    start: '20211201',
-    end: '20211220',
-    title: '事件文本一',
+    start: '20220301',
+    end: '20220307',
+    title: '事件文本',
     detail: '211201事件详情20211220',
     type: 'one', //事件类型
   },
   {
-    id: 2,
-    start: '20211214',
-    end: '20220228',
-    title: '事件文本二',
-    detail: '20211214事件详情20220228',
+    id: 12,
+    start: '20220306',
+    end: '20220316',
+    title: '事件文本六',
+    detail: '211201事件详情20211220',
     type: 'one', //事件类型
   },
   {
+    id: 13,
+    start: '20220306',
+    end: '20220316',
+    title: '事件文本一',
+    detail: '211201事件详情20211220',
+    type: 'four', //事件类型
+  },
+  {
+    id: 2,
+    start: '20220314',
+    end: '20220330',
+    title: '事件文本二',
+    detail: '20211214事件详情20220228',
+    type: 'two', //事件类型
+  },
+  {
     id: 3,
-    start: '20211209',
+    start: '20220409',
     title: '三：没有结束时间，文本超出最大宽度限制，文末显示省略号',
     detail: '20211209事件详情20220102',
     type: 'two', //事件类型
   },
   {
     id: 4,
-    start: '20220101',
-    end: '20220220',
+    start: '20220501',
+    end: '20220520',
     title: '事件文本四',
     detail: '20220101事件详情20220220',
     type: 'three', //事件类型
   },
   {
     id: 5,
-    start: '20220301',
-    end: '20220420',
+    start: '20220320',
+    end: '20220924',
     title: '事件文本五',
     detail: '20220301事件详情20220420',
     type: 'five', //事件类型
   },
 ];
 
-const LINELIST: ILineItem[] = [
+const LeftLineData: ILineItem[] = [
   {
     id: 1,
-    dt: '20211201',
-    value: 0,
-    rate: 0.8,
+    dt: '20211101',
+    value: 99,
+    type: '上证',
   },
   {
-    id: 1,
+    id: 12,
+    dt: '20211101',
+    value: 10,
+    type: '深证',
+  },
+  {
+    id: 121,
     dt: '20211202',
     value: 10,
-    rate: 0.6,
+    type: '不良率',
   },
   {
-    id: 1,
+    id: 1233,
     dt: '20211203',
-    value: 19,
-    rate: 0.1,
-  },
-  {
-    id: 1,
-    dt: '20211204',
-    value: 13,
-    rate: 0.4,
-  },
-  {
-    id: 1,
-    dt: '20211208',
     value: 12,
-    rate: 0.3,
+    type: '上证',
   },
   {
-    id: 2,
-    dt: '20211214',
-    value: 600,
-    rate: 0.9,
+    id: 112,
+    dt: '20211204',
+    value: 783,
+    type: '上证',
+  },
+  {
+    id: 1212,
+    dt: '20211209',
+    value: 90,
+    type: '深证',
   },
   {
     id: 3,
     dt: '20220101',
-    value: 290,
+    value: 200,
+    type: '上证',
+  },
+];
+
+const RightLineData: ILineItem[] = [
+  {
+    id: 11,
+    dt: '20211101',
+    rate: 0.7,
+    type: '不良率',
+  },
+  {
+    id: 112,
+    dt: '20211101',
+    rate: 0.9,
+    type: '不良率2',
+  },
+  {
+    id: 123,
+    dt: '20211203',
     rate: 0.3,
+    type: '不良率',
+  },
+  {
+    id: 2,
+    dt: '20211214',
+    rate: 0.4,
+    type: '不良率',
+  },
+  {
+    id: 3,
+    dt: '20220101',
+    rate: 0.5,
+    type: '不良率',
+  },
+  {
+    id: 33,
+    dt: '20220101',
+    rate: 0.5,
+    type: '不良率2',
   },
   {
     id: 4,
     dt: '20220215',
-    value: 810,
-    rate: 0.8,
+    rate: 0.98,
+    type: '不良率',
   },
 ];
+
+const uvBillData = [
+  {
+    time: '2022-03-01',
+    value: 350,
+    type: 'uv',
+  },
+  {
+    time: '2022-04-01',
+    value: 900,
+    type: 'uv',
+  },
+  {
+    time: '2022-05-01',
+    value: 300,
+    type: 'uv',
+  },
+  {
+    time: '2022-06-01',
+    value: 450,
+    type: 'uv',
+  },
+  {
+    time: '2022-07-01',
+    value: 470,
+    type: 'uv',
+  },
+  {
+    time: '2022-03-01',
+    value: 220,
+    type: 'bill',
+  },
+  {
+    time: '2022-04-01',
+    value: 300,
+    type: 'bill',
+  },
+  {
+    time: '2022-05-01',
+    value: 250,
+    type: 'bill',
+  },
+  {
+    time: '2022-06-01',
+    value: 220,
+    type: 'bill',
+  },
+  {
+    time: '2022-07-01',
+    value: 362,
+    type: 'bill',
+  },
+];
+const transformData = [
+  {
+    time: '2022-03-01',
+    count: 800,
+    name: 'a',
+  },
+  {
+    time: '2022-04-01',
+    count: 600,
+    name: 'a',
+  },
+  {
+    time: '2022-05-01',
+    count: 400,
+    name: 'a',
+  },
+  {
+    time: '2022-06-01',
+    count: 380,
+    name: 'a',
+  },
+  {
+    time: '2022-07-01',
+    count: 220,
+    name: 'a',
+  },
+  {
+    time: '2022-03-01',
+    count: 750,
+    name: 'b',
+  },
+  {
+    time: '2022-04-01',
+    count: 650,
+    name: 'b',
+  },
+  {
+    time: '2022-05-01',
+    count: 450,
+    name: 'b',
+  },
+  {
+    time: '2022-06-01',
+    count: 400,
+    name: 'b',
+  },
+  {
+    time: '2022-07-01',
+    count: 320,
+    name: 'b',
+  },
+  {
+    time: '2022-03-01',
+    count: 900,
+    name: 'c',
+  },
+  {
+    time: '2022-04-01',
+    count: 600,
+    name: 'c',
+  },
+  {
+    time: '2022-05-01',
+    count: 450,
+    name: 'c',
+  },
+  {
+    time: '2022-06-01',
+    count: 300,
+    name: 'c',
+  },
+  {
+    time: '2022-07-01',
+    count: 200,
+    name: 'c',
+  },
+  {
+    time: '2022-10-01',
+    count: 0,
+    name: 'c',
+  },
+];
+
 export default () => (
   <EventLine
-    // id="event-line"
+    id="event-line"
     events={EVENT_DATA}
     eventTypes={eventTypes}
-    lines={[]}
-    // customTooltip={{
-    //   event: (data, location) => (
-    //     <div>
-    //       <div style={{ color: '#666' }}>{data.title}</div>
-    //       <i style={{ color: '#999' }}>详情：{data.detail}</i>
-    //     </div>
-    //   ),
-    //   line: ['上证指数', '不良率'], // 也支持ReactNode, 参数同event
-    // }}
-    // config={{
-    //   event: {
-    //     minWidth: 250,
-    //     radius: 4,
-    //   },
-    //   line: {
-    //     title: {
-    //       label: '趋势图',
-    //       fontSize: 18,
-    //       color: '#1890ff',
-    //       direction: 'vertical',
-    //       paddingLeft: 16,
-    //       primaryColor: '#fff', // 会作为边框颜色
-    //       secondaryColor: '#fff', // 背景颜色
-    //     },
-    //     axis: {
-    //       y: {
-    //         left: {
-    //           formatter: (text) => text + '万',
-    //         },
-    //         right: {
-    //           formatter: (text) => (text * 100).toFixed(0) + '%',
-    //         },
-    //       },
-    //     },
-    //   },
-    // }}
+    lines={[uvBillData, transformData]}
+    customTooltip={{
+      event: (data, location) => (
+        <div>
+          <div style={{ color: '#666' }}>{data.title}</div>
+          <i style={{ color: '#999' }}>详情：{data.detail}</i>
+        </div>
+      ),
+      // line: (t)=>ReactNode, 参数同event
+    }}
+    config={{
+      event: {
+        minWidth: 250,
+        radius: 4,
+      },
+      line: {
+        xField: 'time',
+        yField: ['value', 'count'],
+        title: {
+          label: '趋势图',
+          fontSize: 18,
+          color: '#1890ff',
+          direction: 'vertical',
+          paddingLeft: 16,
+          primaryColor: '#fff', // 会作为边框颜色
+          secondaryColor: '#fff', // 背景颜色
+        },
+        dashLine: {
+          count: 5, // 除去x轴
+          space: 50, // 间距
+          color: '#999',
+          dash: [5, 5],
+          offset: 0,
+        },
+        axis: {
+          y: {
+            left: {
+              seriesField: 'type',
+              formatter: (text) => text + '', //万
+            },
+            right: {
+              seriesField: 'name',
+              lineStyle: {
+                lineWidth: 2,
+                dash: [5, 5],
+                offset: 0,
+              },
+              formatter: (text) => (text * 1).toFixed(0) + '', //%
+            },
+          },
+        },
+      },
+    }}
   />
 );
 ```
