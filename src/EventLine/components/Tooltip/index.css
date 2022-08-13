@@ -8,7 +8,6 @@
   background-clip: padding-box;
   border-radius: 4px;
   box-shadow: 0 3px 6px -4px #0000001f, 0 6px 16px #00000014, 0 9px 28px 8px #0000000d;
-
 }
 
 .Tooltip .title {
@@ -24,6 +23,11 @@
   font-size: 12px;
 }
 
+.Tooltip .label{
+  display: flex;
+  align-items: center;
+}
+
 .tooltipLine {
   position: absolute;
   z-index: 9;
@@ -31,14 +35,23 @@
   width: 2px;
   background-color: #e2e2e2;
 }
+
+.Tooltip .label .labelPoint{
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  border-radius: 3px;
+  margin-right: 8px;
+}
+
 .linePoint {
   box-sizing: border-box;
   position: absolute;
   z-index: 10;
   display: inline-block;
   width: 8px;
-  height: 8px;
+    height: 8px;
+    border-radius: 4px;
   background: #1890ff;
   border: 2px solid #fff;
-  border-radius: 4px;
 }
