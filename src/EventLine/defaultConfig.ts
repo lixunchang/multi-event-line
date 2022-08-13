@@ -11,7 +11,7 @@ const newConfig: IConfig = {
     fontSize: 12,
     forward: 30, // 前置空区域
     behind: 30,
-    unit: 'day', // 只支持day, 只能统一配置，会覆盖event和line的unit配置
+    unit: 'day', // 目前只支持day, 只能统一配置，会覆盖event和line的unit配置
     emptyLeft: 100, // 刻度左侧空白区域
     emptyRight: 200, // 刻度右侧空白区域
     // x轴刻度
@@ -70,8 +70,18 @@ const newConfig: IConfig = {
     key: 'id', // 唯一键
     xField: 'dt',
     yField: ['value', 'rate'], // 左右双轴设置，传一个为左轴
-    // seriesField: 'type', // TODO 多折线
-    lineColor: ['#1890ff', '#009f5d'], // 颜色配置
+    lineColor: [
+      '#1890ff',
+      '#61ddaa',
+      '#65789b',
+      '#f6bd16',
+      '#7262fd',
+      '#78d3f8',
+      '#9661bc',
+      '#f6903d',
+      '#008685',
+      '#f08bb4',
+    ], // 颜色配置
     title: {
       label: '趋势图',
       fontSize: 16,
@@ -97,7 +107,7 @@ const newConfig: IConfig = {
       labelSpace: 16,
       color: '#666', // 文字
       position: 'bottomRight', // TODO 图例位置
-      label: ['上证指数', '不良率'],
+      label: [], // seriesField
     },
     axis: {
       x: {
@@ -109,14 +119,25 @@ const newConfig: IConfig = {
       },
       y: {
         left: {
-          color: '#999',
+          color: '#999', //文字颜色
+          lineColor: '#1890ff',
+          isRate: false,
           fontSize: 12,
+          seriesField: 'type', // 折线分组字段
           formatter: (text: any) => text,
         },
         right: {
-          color: '#666',
+          color: '#999', // 文字颜色
+          lineColor: '#009f5d',
           fontSize: 12,
+          isRate: true,
           width: 36, // 右轴文字宽度
+          seriesField: 'type',
+          lineStyle: {
+            lineWidth: 2,
+            dash: [5, 5],
+            offset: 0,
+          },
           formatter: (text: any) => text,
         },
       },
@@ -164,6 +185,7 @@ export const combineConfig = (defaultConfig: IConfig, customConfig: IConfig) => 
     line: {
       ...defaultConfig.line,
       ...(customConfig?.line || {}),
+      lineColor: [...(customConfig?.line?.lineColor || []), ...defaultConfig.line.lineColor],
       title: {
         ...defaultConfig.line.title,
         ...(customConfig?.line?.title || {}),
