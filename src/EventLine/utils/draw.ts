@@ -20,13 +20,13 @@ export const roundRectPath = (
 };
 
 export const drawYAxisText = (ctx: any, offsetX = 0, offsetYs: number[] = [], config: any = {}) => {
-  const { axisYMin, axisYMax, font, formatter, width, space = 4, fillStyle } = config;
+  const { axisYMin, axisYMax, font, formatter, width, space = 4, fillStyle = '#999' } = config;
   const every = (axisYMax - axisYMin) / (offsetYs.length - 1);
   offsetYs.forEach((offsetY, i) => {
     const text = formatter(axisYMin + every * i);
     const textWidth = ctx.measureText(text).width;
-    ctx.font = font;
     ctx.fillStyle = fillStyle;
+    ctx.font = font;
     ctx.fillText(text, offsetX - (width - space || textWidth + space), offsetY, 120); // (len > 2 ? len * 12 - 8 : 26)
   });
 };
@@ -115,26 +115,29 @@ const judgeDayScaleStyle = (
 interface IScaleConfig {
   axisXData: any;
   scale: Record<string, any>;
+  fillStyle: string;
+  font: string;
+  unit: string;
 }
 // 绘制x轴刻度
 export const drawAxisScale = (
   ctx: any,
   offsetX = 0,
   offsetY = 0,
-  { axisXData, scale }: IScaleConfig,
+  { axisXData, scale, fillStyle, font, unit }: IScaleConfig,
 ) => {
   axisXData.forEach((item: any, i: number) => {
     const { height, color, text, textHalfWidth } = judgeDayScaleStyle(item, scale);
     ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.font = '10px PingFang SC';
-    ctx.textBaseline = 'middle';
-    ctx.beginPath();
+    (ctx.lineWidth = scale.lineWidth), ctx.beginPath();
     ctx.moveTo(offsetX + i * scale.space, offsetY);
     ctx.lineTo(offsetX + i * scale.space, offsetY - height);
     // ctx.closePath();
     ctx.stroke(); // 刻度线
     if (text) {
+      ctx.font = font;
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = fillStyle;
       ctx.fillText(text, offsetX + i * scale.space - textHalfWidth, offsetY + 12); // 刻度文本
     }
   });
@@ -220,7 +223,6 @@ export const drawEventRectWidthText = (
   ctx.stroke();
   ctx.fill();
   if (text) {
-    console.log('text==', text);
     createTextInSchedule(ctx, x, y + h / 2, w, text || '', { ...textStyle });
   }
 };
@@ -235,7 +237,6 @@ export const drawChartLines = (
 ) => {
   const {
     strokeStyle = '#1890ff',
-    lineWidth = 2,
     scaleSpace,
     axisYMin,
     axisYMax,
@@ -244,8 +245,12 @@ export const drawChartLines = (
     showTooltip,
     dtKey = 'dt',
     valueKey = 'value',
+    lineStyle,
   } = config || {};
   const every = (axisYMax - axisYMin) / (dashLineCount - 1);
+  const { dash = [], offset = 0, lineWidth = 2 } = lineStyle || {};
+  ctx.setLineDash(dash);
+  ctx.lineDashOffset = offset;
   ctx.strokeStyle = strokeStyle;
   ctx.lineWidth = lineWidth;
   ctx.beginPath();
@@ -257,9 +262,11 @@ export const drawChartLines = (
       const pointY = zeroY - ((item?.[valueKey] - axisYMin) / every) * dashLineSpace;
       ctx.lineTo(pointX, pointY);
       // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
-      showTooltip('line', { x: pointX - 2, y: zeroY - 300, w: 4, h: 300, pointX, pointY }, item);
+      showTooltip('line', { x: pointX - 3, y: zeroY - 300, w: 6, h: 300, pointX, pointY }, item);
     });
   ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineDashOffset = 0;
 };
 
 export const drawActiveEventGuides = (
@@ -299,13 +306,15 @@ export const drawLegend = (
   ctx: any,
   offsetX: number,
   offsetY: number,
-  { legend, font, lineColor = [] }: any,
+  { legend, font, lineColor = [], types = [] }: any,
 ) => {
   let prevLength = 0;
-  [...legend.label].reverse().forEach((label: string, i: number) => {
+  // const [left, right] = lineColor;
+  const legendLabel = types?.length > 0 ? types : legend.label || [];
+  legendLabel.reverse().forEach((label: string, i: number) => {
     const width = ctx.measureText(label).width + legend.labelSpace;
     const offX = offsetX - prevLength - width;
-    ctx.fillStyle = [...lineColor].reverse()[i];
+    ctx.fillStyle = lineColor[legendLabel.length - 1 - i];
     ctx.fillRect(
       offX - legend.height - legend.labelRectSpace,
       offsetY + legend.marginTop,
