@@ -158,49 +158,48 @@ const LINELIST: ILineItem[] = [
     rate: 0.8,
   },
 ];
-
 export default () => (
   <EventLine
-    id="event-line"
+    // id="event-line"
     events={EVENT_DATA}
     eventTypes={eventTypes}
-    lines={LINELIST}
-    customTooltip={{
-      event: (data, location) => (
-        <div>
-          <div style={{ color: '#666' }}>{data.title}</div>
-          <i style={{ color: '#999' }}>详情：{data.detail}</i>
-        </div>
-      ),
-      line: ['上证指数', '不良率'], // 也支持ReactNode, 参数同event
-    }}
-    config={{
-      event: {
-        minWidth: 250,
-        radius: 4,
-      },
-      line: {
-        title: {
-          label: '趋势图',
-          fontSize: 18,
-          color: '#1890ff',
-          direction: 'vertical',
-          paddingLeft: 16,
-          primaryColor: '#fff', // 会作为边框颜色
-          secondaryColor: '#fff', // 背景颜色
-        },
-        axis: {
-          y: {
-            left: {
-              formatter: (text) => text + '万',
-            },
-            right: {
-              formatter: (text) => (text * 100).toFixed(0) + '%',
-            },
-          },
-        },
-      },
-    }}
+    lines={[]}
+    // customTooltip={{
+    //   event: (data, location) => (
+    //     <div>
+    //       <div style={{ color: '#666' }}>{data.title}</div>
+    //       <i style={{ color: '#999' }}>详情：{data.detail}</i>
+    //     </div>
+    //   ),
+    //   line: ['上证指数', '不良率'], // 也支持ReactNode, 参数同event
+    // }}
+    // config={{
+    //   event: {
+    //     minWidth: 250,
+    //     radius: 4,
+    //   },
+    //   line: {
+    //     title: {
+    //       label: '趋势图',
+    //       fontSize: 18,
+    //       color: '#1890ff',
+    //       direction: 'vertical',
+    //       paddingLeft: 16,
+    //       primaryColor: '#fff', // 会作为边框颜色
+    //       secondaryColor: '#fff', // 背景颜色
+    //     },
+    //     axis: {
+    //       y: {
+    //         left: {
+    //           formatter: (text) => text + '万',
+    //         },
+    //         right: {
+    //           formatter: (text) => (text * 100).toFixed(0) + '%',
+    //         },
+    //       },
+    //     },
+    //   },
+    // }}
   />
 );
 ```

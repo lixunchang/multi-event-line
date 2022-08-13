@@ -43,10 +43,16 @@ export const analysisLineData = (lines: any, fieldNames: any = {}) => {
 };
 
 // 向上取整十，整百，整千，整万
-export const turnNumber = (value: number, method: 'ceil' | 'floor' = 'ceil') => {
+export const turnNumber = (value: number, method: 'ceil' | 'floor' = 'ceil', multi = 1) => {
   if (value === 0) return 0;
-  let absValue = Math.abs(value);
-  let plusMinus = value / absValue;
+
+  let plus = 1;
+  let fun = method;
+  if (value < 0) {
+    plus = -1;
+    fun = method === 'ceil' ? 'floor' : 'ceil';
+  }
+  let absValue = Math.abs(value * multi);
   let bite = 0;
   if (absValue < 10) {
     return method === 'ceil' ? 10 : 0;
@@ -55,7 +61,7 @@ export const turnNumber = (value: number, method: 'ceil' | 'floor' = 'ceil') => 
     value /= 10;
     bite += 1;
   }
-  return Math[method](absValue) * Math.pow(10, bite);
+  return (plus * Math[method](absValue) * Math.pow(10, bite)) / multi;
 };
 
 export const analysisEventLineData = (
