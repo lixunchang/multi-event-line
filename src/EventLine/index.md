@@ -288,31 +288,6 @@ const transformData = [
   },
   {
     time: '2022-03-01',
-    count: 750,
-    name: 'b',
-  },
-  {
-    time: '2022-04-01',
-    count: 650,
-    name: 'b',
-  },
-  {
-    time: '2022-05-01',
-    count: 450,
-    name: 'b',
-  },
-  {
-    time: '2022-06-01',
-    count: 400,
-    name: 'b',
-  },
-  {
-    time: '2022-07-01',
-    count: 320,
-    name: 'b',
-  },
-  {
-    time: '2022-03-01',
     count: 900,
     name: 'c',
   },
