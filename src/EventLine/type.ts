@@ -7,8 +7,8 @@ export interface IEventItem {
 }
 
 export interface ILineItem {
-  dt: string;
-  value: number;
+  dt?: string;
+  value?: number;
   [_: string]: any;
 }
 

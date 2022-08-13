@@ -53,10 +53,8 @@ export const analysisEventData = (events: any, fieldNames: any = {}) => {
     };
   }, {});
 };
-// TODO seriesField 暂未开发
+
 export const analysisLineData = (lines: any, { xField, yField, axisY }: any = {}) => {
-  // const [yLeftField = 'value', yRightField = 'rate'] = yField || {};
-  // const { left:leftY, right:rightY } = axis.y;
   return lines?.reduce(({ minDt, maxDt, minValue, maxValue, types }: any, item: any) => {
     return {
       minDt: momentMin(minDt || item?.[xField], item?.[xField]),
