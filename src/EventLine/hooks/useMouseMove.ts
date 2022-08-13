@@ -72,7 +72,7 @@ const useMouseMove = (selector: string, min: any, max: any) => {
     if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
       //停止事件冒泡和默认事件
       stopPropagationAndDefault(event);
-      var length = moveXLength + event.deltaX;
+      let length = moveXLength + event.deltaX;
       if (min && length < min) {
         length = min;
       }
