@@ -1,5 +1,40 @@
 import moment from 'moment';
 
+// 向上取整十，整百，整千，整万 ceil向上，floor向下
+export const turnNumber = (value: number, method: 'ceil' | 'floor', rate = 1) => {
+  if (value === 0) return 0;
+  let plus = 1;
+  let fun = method;
+  if (value < 0) {
+    plus = -1;
+    fun = method === 'ceil' ? 'floor' : 'ceil';
+  }
+  let absValue = Math.abs(value * rate);
+  let bite = 0;
+  if (absValue < 10) {
+    return fun === 'ceil' ? 10 : 0;
+  }
+  while (absValue >= 10) {
+    absValue /= 10;
+    bite += 1;
+  }
+  return (plus * Math[fun](absValue) * Math.pow(10, bite)) / rate;
+};
+
+export const momentMin = (date1: any, date2: any) => {
+  if (moment(date1).isBefore(date2)) {
+    return date1;
+  }
+  return date2;
+};
+
+export const momentMax = (date1: any, date2: any) => {
+  if (moment(date1).isBefore(date2)) {
+    return date2;
+  }
+  return date1;
+};
+
 export const getLineDashYList = (count: number, space: number) => {
   const dashList: number[] = [];
   for (let i = 1; i <= count; i++) {
@@ -9,59 +44,28 @@ export const getLineDashYList = (count: number, space: number) => {
 };
 
 export const analysisEventData = (events: any, fieldNames: any = {}) => {
-  const { startField = 'start', endField = 'end' } = fieldNames || {};
+  const { start = 'start', end = 'end' } = fieldNames || {};
   return events.reduce(({ min, max }: any, event: any) => {
+    // const eventStart = moment(event?.[start])
     return {
-      min: Math.min(min || parseInt(event?.[startField]), parseInt(event?.[startField])),
-      max: Math.max(max || 0, parseInt(event?.[endField])),
+      min: momentMin(min || event?.[start], event?.[start]),
+      max: momentMax(max || 0, event?.[end]),
     };
   }, {});
 };
-
 // TODO seriesField 暂未开发
-export const analysisLineData = (lines: any, fieldNames: any = {}) => {
-  const { lineXField = 'dt', lineYField = 'value', lineY2Field = 'rate' } = fieldNames || {};
-  return lines?.reduce(
-    ({ minDt, maxDt, minValue, maxValue, min2Value, max2Value }: any, event: any) => {
-      return {
-        minDt: Math.min(minDt || parseInt(event?.[lineXField]), parseInt(event?.[lineXField])),
-        maxDt: Math.max(maxDt || 0, parseInt(event?.[lineXField])),
-        minValue: Math.min(
-          minValue === 0 ? 0 : minValue || event?.[lineYField],
-          event?.[lineYField],
-        ),
-        maxValue: Math.max(maxValue || 0, event?.[lineYField]),
-        min2Value: Math.min(
-          min2Value === 0 ? 0 : min2Value || event?.[lineY2Field],
-          event?.[lineY2Field],
-        ),
-        max2Value: Math.max(max2Value || 0, event?.[lineY2Field]),
-      };
-    },
-    {},
-  );
-};
-
-// 向上取整十，整百，整千，整万
-export const turnNumber = (value: number, method: 'ceil' | 'floor' = 'ceil', multi = 1) => {
-  if (value === 0) return 0;
-
-  let plus = 1;
-  let fun = method;
-  if (value < 0) {
-    plus = -1;
-    fun = method === 'ceil' ? 'floor' : 'ceil';
-  }
-  let absValue = Math.abs(value * multi);
-  let bite = 0;
-  if (absValue < 10) {
-    return method === 'ceil' ? 10 : 0;
-  }
-  while (absValue >= 10) {
-    value /= 10;
-    bite += 1;
-  }
-  return (plus * Math[method](absValue) * Math.pow(10, bite)) / multi;
+export const analysisLineData = (lines: any, { xField, yField, axisY }: any = {}) => {
+  // const [yLeftField = 'value', yRightField = 'rate'] = yField || {};
+  // const { left:leftY, right:rightY } = axis.y;
+  return lines?.reduce(({ minDt, maxDt, minValue, maxValue, types }: any, item: any) => {
+    return {
+      minDt: momentMin(minDt || item?.[xField], item?.[xField]),
+      maxDt: momentMax(maxDt || 0, item?.[xField]),
+      minValue: Math.min(minValue === 0 ? 0 : minValue || item?.[yField], item?.[yField]),
+      maxValue: Math.max(maxValue || 0, item?.[yField]),
+      types: new Set([...(types || []), item?.[axisY?.seriesField]]),
+    };
+  }, {});
 };
 
 export const analysisEventLineData = (
@@ -70,27 +74,43 @@ export const analysisEventLineData = (
   { axisX, event, line }: Record<string, any> = {},
 ) => {
   const { forward = 30, behind = 30, unit = 'day', scale } = axisX || {};
-  const { startField, endField } = event.fieldNames;
-  const { xField, yField } = line;
-  const [lineYField, lineY2Field, seriesField] = yField;
-
-  const { min: eventMinDate, max: eventMaxDate } = analysisEventData(events, {
-    startField,
-    endField,
+  const [leftLines, rightLines] = lines;
+  const [leftYField, rightYField] = line.yField;
+  const { min: eventMinDate, max: eventMaxDate } = analysisEventData(events, event.fieldNames);
+  // xField, yField, axisY
+  const {
+    minDt: leftLineMinDate,
+    maxDt: leftLineMaxDate,
+    minValue: leftLineMinValue,
+    maxValue: leftLineMaxValue,
+    types: leftLineTypes,
+  } = analysisLineData(leftLines, {
+    xField: line.xField,
+    yField: leftYField,
+    axisY: line.axis.y.left,
   });
   const {
-    minDt: lineMinDate,
-    maxDt: lineMaxDate,
-    minValue: lineMinValue,
-    maxValue: lineMaxValue,
-    min2Value: lineMin2Value,
-    max2Value: lineMax2Value,
-  } = analysisLineData(lines, { xField, lineYField, lineY2Field, seriesField });
-  const minDate = `${Math.min(eventMinDate, lineMinDate || eventMinDate)}`; //存在折线没有数据的情况
-  const maxDate = `${Math.max(eventMaxDate, lineMaxDate || eventMaxDate)}`;
+    minDt: rightLineMinDate,
+    maxDt: rightLineMaxDate,
+    minValue: rightLineMinValue,
+    maxValue: rightLineMaxValue,
+    types: rightLineTypes,
+  } = analysisLineData(rightLines, {
+    xField: line.xField,
+    yField: rightYField,
+    axisY: line.axis.y.right,
+  });
+
+  const lineMinDate = momentMin(leftLineMinDate, rightLineMinDate);
+  const lineMaxDate = momentMax(leftLineMaxDate, rightLineMaxDate);
+
+  const { left: leftY, right: rightY } = line.axis.y;
+  const minDate = momentMin(eventMinDate, lineMinDate || eventMinDate); //存在折线没有数据的情况
+  const maxDate = momentMax(eventMaxDate, lineMaxDate || eventMaxDate);
   const axisXStart = moment(minDate).subtract(forward, unit).format('YYYYMMDD');
   const axisXEnd = moment(maxDate).add(behind, unit).format('YYYYMMDD');
   const axisXTotal = moment(axisXEnd).diff(moment(axisXStart), unit);
+
   return {
     minDate,
     maxDate,
@@ -98,15 +118,15 @@ export const analysisEventLineData = (
     axisXEnd,
     axisXWidth: axisXTotal * scale.space,
     axisXTotal,
-    axisYMax: turnNumber(lineMaxValue, 'ceil'),
-    axisYMin: lineMinValue === 0 ? 0 : turnNumber(lineMinValue, 'floor'),
-    axisY2Max: Math.ceil(lineMax2Value),
-    axisY2Min: Math.floor(lineMin2Value),
+    axisYMax: turnNumber(leftLineMaxValue, 'ceil', leftY?.isRate ? 100 : 1),
+    axisYMin: turnNumber(leftLineMinValue, 'floor', leftY?.isRate ? 100 : 1),
+    axisY2Max: turnNumber(rightLineMaxValue, 'ceil', rightY?.isRate ? 100 : 1),
+    axisY2Min: turnNumber(rightLineMinValue, 'floor', rightY?.isRate ? 100 : 1),
     eventMinDate,
     eventMaxDate,
     lineMinDate,
     lineMaxDate,
-    lineMinValue,
-    lineMaxValue,
+    leftLineTypes: Array.from(leftLineTypes).filter((i) => i),
+    rightLineTypes: Array.from(rightLineTypes).filter((i) => i),
   };
 };
