@@ -1,9 +1,3 @@
----
-nav:
-  title: Components
-  path: /components
----
-
 # EventLine 复合事件线组件
 
 ---
