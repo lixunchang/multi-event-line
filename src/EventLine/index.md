@@ -19,8 +19,8 @@ React 复合事件线组件：同时展示多种类型事件和关键指标折�
 
 ```tsx
 import React from 'react';
-import type { IEventType, IEventItem, ILineItem } from '@alipay/bank-vis';
-import { EventLine } from '@alipay/bank-vis';
+import type { IEventType, IEventItem, ILineItem } from 'multi-event-line';
+import EventLine from 'multi-event-line';
 
 const eventTypes: IEventType[] = [
   {
