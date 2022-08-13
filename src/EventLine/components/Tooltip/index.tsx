@@ -1,9 +1,11 @@
 import React, { CSSProperties, ReactNode } from 'react';
 import { ETooltipStatus } from '../../type';
+import TooltipContent from './Content';
 import './index.css';
 
 interface IProps {
   location: any;
+  canvasSize: any;
   pointLocation: any;
   fieldNames: {
     event: Record<string, any>;
@@ -16,70 +18,53 @@ interface IProps {
   guideLineStyle: CSSProperties;
 }
 export default React.memo(
-  ({ location, pointLocation, fieldNames, type, guideLineStyle, customContent, data }: IProps) => {
-    if (!location || type === ETooltipStatus.NOTHING) return null;
-    const { event: eventFields, line: lineFields } = fieldNames;
-    const [leftField = 'value', rightField] = lineFields?.yField || [];
-    const { style, event, line } = customContent || {};
-    const pointColor = pointLocation.reduce(
-      (total: any, { key, color }: any) => ({
-        ...total,
-        [key]: color,
-      }),
-      {},
-    );
+  ({
+    location,
+    canvasSize,
+    pointLocation,
+    fieldNames,
+    type,
+    guideLineStyle,
+    customContent,
+    data,
+  }: IProps) => {
+    if (!location || !data || type === ETooltipStatus.NOTHING) return null;
+    const { width, height } = canvasSize;
+    const tooRight = location?.x * 4 > width * 3;
+    const tooTop = location?.y * 4 < height;
+    const positionStyle = {
+      [tooRight ? 'right' : 'left']: tooRight ? width - location?.x + 10 : location?.x + 10,
+      [tooTop ? 'top' : 'bottom']: tooTop ? location?.y + 10 : height - location?.y + 10,
+    };
     return (
       <>
         <div
           className="Tooltip"
-          style={{ left: location?.x + 10, top: location?.y + 14, ...style }}
+          style={{
+            // left: location?.x + 10,
+            // top: location?.y + 10,
+            ...positionStyle,
+            ...(customContent?.style || {}),
+          }}
         >
-          {type === ETooltipStatus.LINE && (
-            <>
-              {typeof line === 'function' ? (
-                line(data, location)
-              ) : (
-                <>
-                  <div className="title">{data?.[lineFields?.xField || 'dt']}</div>
-                  <div className="desc">
-                    <span className="label">
-                      <span className="labelPoint" style={{ background: pointColor.value }} />
-                      <span>{Array.isArray(line) && line[0] ? line[0] : leftField}:</span>
-                    </span>
-                    <span>{data?.[leftField]}</span>
-                  </div>
-                  {rightField && (
-                    <div className="desc">
-                      <span className="label">
-                        <span className="labelPoint" style={{ background: pointColor.rate }} />
-                        <span>{Array.isArray(line) && line[1] ? line[1] : rightField}:</span>
-                      </span>
-                      <span>{data?.[rightField]}</span>
-                    </div>
-                  )}
-                </>
-              )}
-            </>
-          )}
-          {type === ETooltipStatus.EVENT && (
-            <div>
-              {typeof event === 'function' ? (
-                event(data, location)
-              ) : (
-                <>
-                  <div className="title">1{data?.[eventFields?.titleField]}</div>
-                  <div className="desc">
-                    <span>1{data?.[eventFields?.detailField]}</span>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
+          <TooltipContent
+            type={type}
+            data={data}
+            customContent={customContent}
+            fieldNames={fieldNames}
+            pointLocation={pointLocation.map(({ key, label, yField, data, color }: any) => ({
+              key,
+              label,
+              yField,
+              data,
+              color,
+            }))}
+          />
         </div>
         {type === ETooltipStatus.LINE && pointLocation?.length > 0 && (
           <>
-            {pointLocation?.map(({ x, y, color = '#1890ff' }: any) => (
-              <span key={x + '_' + y}>
+            {pointLocation?.map(({ x, y, color = '#1890ff' }: any, index: number) => (
+              <span key={index + '_' + x + '_' + y}>
                 <span className="tooltipLine" style={{ left: x - 1, ...guideLineStyle }} />
                 <span
                   className="linePoint"
@@ -92,15 +77,11 @@ export default React.memo(
       </>
     );
   },
-  // (prev, next) => {
-  //   if (
-  //     Math.abs(prev.location?.x - next.location?.x) > 4 ||
-  //     Math.abs(prev.location?.y - next.location?.y) > 4 ||
-  //     prev.title !== next.title ||
-  //     prev.desc !== next.desc
-  //   ) {
-  //     return false;
-  //   }
-  //   return true;
-  // },
+  (prev, next) => {
+    // return false 更新，true不更新
+    return !(
+      Math.abs((prev.location?.x || 0) - next.location?.x.toFixed(0)) >= 4 ||
+      Math.abs((prev.location?.y || 0) - next.location?.y.toFixed(0)) >= 4
+    );
+  },
 );
