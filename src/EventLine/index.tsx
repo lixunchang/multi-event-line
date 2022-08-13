@@ -26,7 +26,7 @@ interface IProps {
   id?: string;
   events: IEventItem[];
   eventTypes?: any;
-  lines?: ILineItem[];
+  lines?: ILineItem[][];
   [_: string]: any;
 }
 
@@ -67,11 +67,11 @@ export default React.memo(
     const { width: eventTypeWidth, height: eventTypeHeight } = event.type || {};
     const { height: axisXheight } = axisX || {}; // 公共部分
     const { height: eventHeight } = event || {};
-    const { space: scaleLineSpace = 50, count: scaleLineCount = 5 } = line.dashLine || {};
+    const { space: dashLineSpace = 50, count: dashLineCount = 5 } = line.dashLine || {};
     //事件高度计算；
     const eventsHeight = eventTypeHeight * eTypes.length;
-    const lineHeight = withLine ? scaleLineSpace * (scaleLineCount + 1) : 0; // 加上X轴
-    const dashLineList = getLineDashYList(scaleLineCount + 1, scaleLineSpace) || [
+    const lineHeight = withLine ? dashLineSpace * (dashLineCount + 1) : 0; // 加上X轴
+    const dashLineList = getLineDashYList(dashLineCount + 1, dashLineSpace) || [
       300, 250, 200, 150, 100, 50,
     ];
 
@@ -84,12 +84,20 @@ export default React.memo(
     const [linePoint, setLinePoint] = useState<any>([]);
     const [activeEventId, setActiveEventId] = useState();
 
-    const { axisXStart, axisXEnd, axisYMax, axisYMin, axisY2Max, axisY2Min, axisXWidth } =
-      analysisEventLineData(events, lines, { axisX, event, line });
-    const axisXData = Array.from(moment.range(moment(axisXStart), moment(axisXEnd)).by('days')).map(
-      (item) => item.format('YYYYMMDD'),
-    );
-
+    const {
+      axisXStart,
+      axisXEnd,
+      axisYMax,
+      axisYMin,
+      axisY2Max,
+      axisY2Min,
+      axisXWidth,
+      leftLineTypes,
+      rightLineTypes,
+    } = analysisEventLineData(events, lines, { axisX, event, line });
+    const axisXData = Array.from(
+      moment.range(moment(axisXStart), moment(axisXEnd)).by(axisX.unit),
+    ).map((item) => item.format('YYYYMMDD'));
     const { mouseMoveX, mouseXY, mouseStatus } = useMouseMove(
       `#${id}`,
       0 - axisX.emptyLeft - paddingLeft,
@@ -100,8 +108,13 @@ export default React.memo(
       type: ETooltipStatus,
       area: IArea,
       data: any,
-      color = '#1890ff',
-      key = '',
+      {
+        dataType = '', // 左侧或右侧
+        color = '#1890ff', // 颜色
+        label = '',
+        yField = '',
+        key = '',
+      }: any = {},
     ) => {
       if (
         mouseStatus === EMouseStatus.SCROLL_X ||
@@ -126,16 +139,30 @@ export default React.memo(
         mouseXY.y >= area.y &&
         mouseXY.y <= area.y + (area.h || 2)
       ) {
-        if (type === ETooltipStatus.LINE && !linePointList.find((ite: any) => ite.key === key)) {
-          linePointList.push({ x: area?.pointX, y: area?.pointY, color, key });
-          setLinePoint(linePointList);
+        if (type === ETooltipStatus.LINE && !linePointList.find((ite: any) => ite?.key === key)) {
+          linePointList.push({
+            x: area?.pointX,
+            y: area?.pointY,
+            color,
+            key,
+            data,
+            dataType,
+            label,
+            yField,
+          });
+          setLinePoint(linePointList); //TOOD 重置操作
         }
         if (mouseStatus === EMouseStatus.HOVER) {
           setTooltipStatus(type);
           setTooltipData(data);
         }
         return true;
-      } else if (tooltipStatus === type && tooltipData?.id === data.id) {
+      } else if (
+        tooltipStatus === type &&
+        ((type === ETooltipStatus.LINE && tooltipData?.[line?.xField] === data?.[line?.xField]) ||
+          (type === ETooltipStatus.EVENT &&
+            tooltipData?.[event.fieldNames.key] === data?.[event.fieldNames.key]))
+      ) {
         linePointList = [];
         setLinePoint([]);
         setTooltipStatus(ETooltipStatus.NOTHING);
@@ -154,30 +181,50 @@ export default React.memo(
       offsetY: number,
       moveX: number,
       scale: any,
-      lineColor = '#999',
+      { strokeStyle = '#999', fillStyle = '#666', font = '' },
     ) => {
       const context = getContext();
       // 事件x轴
       drawHorizontalLine(context, offsetX, [offsetY], {
         isAxis: true,
         axisXData,
-        strokeStyle: lineColor,
+        strokeStyle,
         scaleSpace: scale.space,
       });
-      drawAxisScale(context, offsetX - moveX, offsetY, { axisXData, scale }); // 绘制刻度
+      drawAxisScale(context, offsetX - moveX, offsetY, {
+        axisXData,
+        scale,
+        fillStyle,
+        font,
+        unit: axisX.unit,
+      }); // 绘制刻度
     };
 
     const drawAxisAndLine = (offsetX: number, offsetY: number, moveX: number) => {
       const context = getContext();
       const [lineYField, lineY2Field] = line.yField;
-      drawXAxis(offsetX, offsetY + axisXheight, moveX, { ...axisX.scale, ...event.axis.x.scale }); // 事件x轴
+      drawXAxis(
+        offsetX,
+        offsetY + axisXheight,
+        moveX,
+        { ...axisX.scale, ...event.axis.x.scale },
+        {
+          strokeStyle: event.axis.x.lineColor,
+          fillStyle: event.axis.x.color,
+          font: `${event.axis.x.fontSize || axisX.fontSize}px ${font}`,
+        },
+      ); // 事件x轴
       withLine &&
         drawXAxis(
           offsetX,
           offsetY + lineHeight + axisXheight,
           moveX,
           { ...axisX.scale, ...line.axis.x.scale },
-          line.axis.x.lineColor || '#999',
+          {
+            strokeStyle: line.axis.x.lineColor || axisX.lineColor,
+            fillStyle: line.axis.x.color || axisX.color,
+            font: `${line.axis.x.fontSize || axisX.fontSize}px ${font}`,
+          },
         ); // + 间距
       // 画事件类型 不加间距
       drawEventTypes(offsetX, offsetY);
@@ -239,10 +286,11 @@ export default React.memo(
             lineColor: line.lineColor,
             legend: line.legend,
             font: `${line.legend.fontSize}px ${font}`,
+            types: [...(leftLineTypes || []), ...(rightLineTypes || [])],
           },
         );
       }
-      // paddingLeft;
+      // 绘制paddingLeft;
       if (paddingLeft > 0) {
         context.fillStyle = '#fff';
         context.fillRect(
@@ -281,6 +329,7 @@ export default React.memo(
               radius: 0,
               textStyle: {
                 ...rest,
+                font: `${rest.fontSize}px ${font}`,
                 fillStyle: rest.color || '#999',
               },
             },
@@ -300,6 +349,7 @@ export default React.memo(
             radius: 0,
             textStyle: {
               ...event.type,
+              font: `${event.type.fontSize}px ${font}`,
               fillStyle: event.type.color || primaryColor,
             },
           },
@@ -381,7 +431,6 @@ export default React.memo(
           };
           return;
         }
-
         drawEventRectWidthText(
           context,
           rectX, // x
@@ -407,32 +456,91 @@ export default React.memo(
     };
     const drawLines = (offsetX: number, offsetY: number) => {
       const context = getContext();
+      const [leftLines, rightLines] = lines;
       const [lineYField, lineY2Field] = line.yField;
-      const [line1Color, line2Color] = line.lineColor;
-      drawChartLines(context, axisXStart, offsetX, offsetY, lines, {
-        scaleSpace: axisX.scale.space,
-        axisYMax,
-        axisYMin,
-        scaleLineSpace,
-        dashLineCount: dashLineList.length,
-        strokeStyle: line1Color,
-        dtKey: line.xField,
-        valueKey: lineYField,
-        showTooltip: (type: ETooltipStatus, area: IArea, data: any) =>
-          showTooltip(type, area, data, line1Color, lineYField),
-      });
-      drawChartLines(context, axisXStart, offsetX, offsetY, lines, {
-        scaleSpace: axisX.scale.space,
-        axisYMax: axisY2Max,
-        axisYMin: axisY2Min,
-        scaleLineSpace,
-        dashLineCount: dashLineList.length,
-        strokeStyle: line2Color,
-        dtKey: line.xField,
-        valueKey: lineY2Field,
-        showTooltip: (type: ETooltipStatus, area: IArea, data: any) =>
-          showTooltip(type, area, data, line2Color, lineY2Field),
-      });
+      const { left, right } = line.axis.y;
+      const leftTypes = leftLineTypes?.length > 0 ? leftLineTypes : [''];
+      const rightTypes = rightLineTypes?.length > 0 ? rightLineTypes : [''];
+      lineYField &&
+        leftLines?.length > 0 &&
+        leftTypes.forEach((type, i) => {
+          const current =
+            type === ''
+              ? leftLines
+              : leftLines.filter((item) => item?.[left?.seriesField] === type);
+          drawChartLines(context, axisXStart, offsetX, offsetY, current, {
+            scaleSpace: axisX.scale.space,
+            axisYMax,
+            axisYMin,
+            dashLineSpace,
+            dashLineCount: dashLineList.length,
+            strokeStyle: line.lineColor[i],
+            dtKey: line.xField,
+            valueKey: lineYField,
+            lineStyle: left.lineStyle,
+            showTooltip: (status: ETooltipStatus, area: IArea, data: any) =>
+              showTooltip(
+                status,
+                area,
+                {
+                  ...data,
+                  lineTooltipLabel:
+                    data?.[left?.label] ||
+                    left?.label ||
+                    data?.[left?.seriesField] ||
+                    left?.seriesField,
+                },
+                {
+                  dataType: 'left',
+                  color: line.lineColor[i],
+                  key: `${lineYField}-${type}`,
+                  label: type,
+                  yField: lineYField,
+                },
+              ),
+          });
+        });
+      lineY2Field &&
+        rightLines.length > 0 &&
+        rightTypes.forEach((type, i) => {
+          const current =
+            type === ''
+              ? rightLines
+              : rightLines.filter((item) => item?.[right?.seriesField] === type);
+          const lineColor = line.lineColor[leftTypes?.length + i];
+          drawChartLines(context, axisXStart, offsetX, offsetY, current, {
+            scaleSpace: axisX.scale.space,
+            axisYMax: axisY2Max,
+            axisYMin: axisY2Min,
+            dashLineSpace,
+            dashLineCount: dashLineList.length,
+            strokeStyle: lineColor,
+            dtKey: line.xField,
+            valueKey: lineY2Field,
+            seriesField: `${lineY2Field}-${type}`,
+            lineStyle: right.lineStyle,
+            showTooltip: (status: ETooltipStatus, area: IArea, data: any) =>
+              showTooltip(
+                status,
+                area,
+                {
+                  ...data,
+                  lineTooltipLabel:
+                    data?.[right?.label] ||
+                    right?.label ||
+                    data?.[right?.seriesField] ||
+                    right?.seriesField,
+                },
+                {
+                  dataType: 'right',
+                  color: lineColor,
+                  key: `${lineY2Field}-${type}`,
+                  yField: lineY2Field,
+                  label: type,
+                },
+              ),
+          });
+        });
     };
 
     const draw = (startX: number, startY: number, moveX: number) => {
@@ -453,19 +561,25 @@ export default React.memo(
       draw(eventTypeWidth, eventsHeight + paddingTop, mouseMoveX);
     }, [mouseMoveX, mouseXY, mouseStatus, activeEventId]);
     const canvasHeight =
+      paddingTop +
       eventsHeight +
-      lineHeight +
       axisXheight +
       axisX.scale.textHeight +
-      paddingTop +
       paddingBottom +
-      (withLine ? line.legend.height + line.legend.marginTop + line.legend.marginBottom : 0);
-
+      (withLine
+        ? lineHeight +
+          axisXheight +
+          axisX.scale.textHeight +
+          line.legend.height +
+          line.legend.marginTop +
+          line.legend.marginBottom
+        : 0);
     return (
       <div className="EventLine">
         <canvas id={id} ref={canvasRef} width="900" height={canvasHeight} />
         <Tooltip
           type={tooltipStatus}
+          canvasSize={{ width: canvasWidth, height: canvasHeight }}
           location={mouseXY}
           pointLocation={linePoint}
           customContent={customTooltip}
