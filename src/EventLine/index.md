@@ -63,7 +63,7 @@ const eventTypes: IEventType[] = [
 const EVENT_DATA: IEventItem[] = [
   {
     id: 1,
-    start: '20220301',
+    start: '20200301',
     end: '20220307',
     title: '事件文本',
     detail: '211201事件详情20211220',
@@ -72,7 +72,7 @@ const EVENT_DATA: IEventItem[] = [
   {
     id: 12,
     start: '20220306',
-    end: '20220316',
+    end: '20250316',
     title: '事件文本六',
     detail: '211201事件详情20211220',
     type: 'one', //事件类型
@@ -103,7 +103,7 @@ const EVENT_DATA: IEventItem[] = [
   {
     id: 4,
     start: '20220501',
-    end: '20220520',
+    end: '20240520',
     title: '事件文本四',
     detail: '20220101事件详情20220220',
     type: 'three', //事件类型
@@ -111,111 +111,21 @@ const EVENT_DATA: IEventItem[] = [
   {
     id: 5,
     start: '20220320',
-    end: '20220924',
+    end: '20230924',
     title: '事件文本五',
     detail: '20220301事件详情20220420',
     type: 'five', //事件类型
   },
 ];
 
-const LeftLineData: ILineItem[] = [
-  {
-    id: 1,
-    dt: '20211101',
-    value: 99,
-    type: '上证',
-  },
-  {
-    id: 12,
-    dt: '20211101',
-    value: 10,
-    type: '深证',
-  },
-  {
-    id: 121,
-    dt: '20211202',
-    value: 10,
-    type: '不良率',
-  },
-  {
-    id: 1233,
-    dt: '20211203',
-    value: 12,
-    type: '上证',
-  },
-  {
-    id: 112,
-    dt: '20211204',
-    value: 783,
-    type: '上证',
-  },
-  {
-    id: 1212,
-    dt: '20211209',
-    value: 90,
-    type: '深证',
-  },
-  {
-    id: 3,
-    dt: '20220101',
-    value: 200,
-    type: '上证',
-  },
-];
-
-const RightLineData: ILineItem[] = [
-  {
-    id: 11,
-    dt: '20211101',
-    rate: 0.7,
-    type: '不良率',
-  },
-  {
-    id: 112,
-    dt: '20211101',
-    rate: 0.9,
-    type: '不良率2',
-  },
-  {
-    id: 123,
-    dt: '20211203',
-    rate: 0.3,
-    type: '不良率',
-  },
-  {
-    id: 2,
-    dt: '20211214',
-    rate: 0.4,
-    type: '不良率',
-  },
-  {
-    id: 3,
-    dt: '20220101',
-    rate: 0.5,
-    type: '不良率',
-  },
-  {
-    id: 33,
-    dt: '20220101',
-    rate: 0.5,
-    type: '不良率2',
-  },
-  {
-    id: 4,
-    dt: '20220215',
-    rate: 0.98,
-    type: '不良率',
-  },
-];
-
 const uvBillData = [
   {
-    time: '2022-03-01',
+    time: '2020-03-01',
     value: 350,
     type: 'uv',
   },
   {
-    time: '2022-04-01',
+    time: '2021-04-01',
     value: 900,
     type: 'uv',
   },
@@ -307,12 +217,12 @@ const transformData = [
     name: 'c',
   },
   {
-    time: '2022-07-01',
+    time: '2024-07-01',
     count: 200,
     name: 'c',
   },
   {
-    time: '2022-10-01',
+    time: '2025-10-01',
     count: 0,
     name: 'c',
   },

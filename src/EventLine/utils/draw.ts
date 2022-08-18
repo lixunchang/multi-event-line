@@ -1,5 +1,25 @@
 import moment from 'moment';
 
+/**
+ * 绘制可见区域，优化性能, 返回需要绘制区域，不需要绘制返回null
+ * @param type
+ * @param data
+ */
+export const visibilityDraw = (type: string, data: Record<string, any>) => {
+  const { visibleLeftX: left, visibleRightX: right } = data;
+  switch (type) {
+    case 'event':
+      const { rectX, rectW } = data;
+      const newRectX = rectX <= right ? Math.max(rectX, left - 2) : 0;
+      return { rectX: newRectX, rectW: Math.min(rectX + rectW, right + 2) - newRectX };
+    case 'line':
+      const { prevX, pointX } = data;
+      return { visibility: !(prevX && prevX < left && pointX > right) };
+    default:
+      return { rectX: 0, rectW: 0 };
+  }
+};
+
 export const roundRectPath = (
   ctx: any,
   x: number,
@@ -246,6 +266,8 @@ export const drawChartLines = (
     dtKey = 'dt',
     valueKey = 'value',
     lineStyle,
+    visibleLeftX,
+    visibleLeftY,
   } = config || {};
   const every = (axisYMax - axisYMin) / (dashLineCount - 1);
   const { dash = [], offset = 0, lineWidth = 2 } = lineStyle || {};
@@ -256,14 +278,19 @@ export const drawChartLines = (
   ctx.beginPath();
   list
     .sort((a: any, b: any) => a?.[dtKey] - b?.[dtKey])
-    .forEach((item: any) => {
+    .reduce(({ prevX }: any = {}, item: any) => {
       const len = moment(item?.[dtKey]).diff(axisXStart, 'days');
       const pointX = zeroX + len * scaleSpace;
       const pointY = zeroY - ((item?.[valueKey] - axisYMin) / every) * dashLineSpace;
+      const { visibility } = visibilityDraw('line', { prevX, pointX, visibleLeftX, visibleLeftY });
+      if (!visibility) {
+        return;
+      }
       ctx.lineTo(pointX, pointY);
       // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
       showTooltip('line', { x: pointX - 3, y: zeroY - 300, w: 6, h: 300, pointX, pointY }, item);
-    });
+      return { prevX: pointX };
+    }, {});
   ctx.stroke();
   ctx.setLineDash([]);
   ctx.lineDashOffset = 0;

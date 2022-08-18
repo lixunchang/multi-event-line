@@ -13,6 +13,7 @@ import {
   drawHorizontalLine,
   drawLegend,
   drawYAxisText,
+  visibilityDraw,
 } from './utils/draw';
 import Tooltip from './components/Tooltip';
 import './index.css';
@@ -103,6 +104,20 @@ export default React.memo(
       0 - axisX.emptyLeft - paddingLeft,
       axisXWidth - axisX.emptyRight - paddingRight,
     );
+    const canvasHeight =
+      paddingTop +
+      eventsHeight +
+      axisXheight +
+      axisX.scale.textHeight +
+      paddingBottom +
+      (withLine
+        ? lineHeight +
+          axisXheight +
+          axisX.scale.textHeight +
+          line.legend.height +
+          line.legend.marginTop +
+          line.legend.marginBottom
+        : 0);
 
     const showTooltip = (
       type: ETooltipStatus,
@@ -121,6 +136,7 @@ export default React.memo(
         mouseStatus === EMouseStatus.MOVE ||
         mouseStatus === EMouseStatus.DRAG ||
         (mouseXY && mouseXY.x < paddingLeft + eventTypeWidth) ||
+        (mouseXY && mouseXY.x > canvasWidth - paddingRight) ||
         (mouseXY &&
           type === ETooltipStatus.LINE &&
           mouseXY.y > eventsHeight + axisXheight &&
@@ -371,16 +387,27 @@ export default React.memo(
         };
         const rangeStartX = moment(item?.[startField]).diff(moment(axisXStart), 'days');
         const count = moment(item?.[endField]).diff(moment(item?.[startField]), 'days');
-        const rectX = offsetX + rangeStartX * scale.space;
+        const startX = offsetX + rangeStartX * scale.space;
         const rectY = offsetY - eventTypeHeight * (eventTypes.length - sort); // 使用事件类型高度
-        let rectW = count * scale.space;
+        let eventW = count * scale.space;
         let guideW = count * scale.space;
-        if (!item?.[endField] || rectW < minWidth) {
+
+        if (!item?.[endField] || eventW < minWidth) {
           if (!item?.[endField]) {
             guideW = 0;
           }
-          rectW = minWidth;
+          eventW = minWidth;
         }
+        const { rectX = 0, rectW = 0 } = visibilityDraw('event', {
+          rectX: startX,
+          rectW: eventW,
+          visibleLeftX: eventTypeWidth + paddingLeft,
+          visibleRightX: canvasWidth - paddingRight,
+        });
+        if (rectX <= 0 || rectW <= 0) {
+          return;
+        }
+        console.log('====', rectX, rectW);
         const rectH = height;
         const isActive = showTooltip(
           ETooltipStatus.EVENT,
@@ -465,9 +492,10 @@ export default React.memo(
         leftLines?.length > 0 &&
         leftTypes.forEach((type, i) => {
           const current =
-            type === ''
+            type === '' || !type
               ? leftLines
               : leftLines.filter((item) => item?.[left?.seriesField] === type);
+
           drawChartLines(context, axisXStart, offsetX, offsetY, current, {
             scaleSpace: axisX.scale.space,
             axisYMax,
@@ -478,6 +506,8 @@ export default React.memo(
             dtKey: line.xField,
             valueKey: lineYField,
             lineStyle: left.lineStyle,
+            visibleLeftX: eventTypeWidth + paddingLeft,
+            visibleRightX: canvasWidth - paddingRight,
             showTooltip: (status: ETooltipStatus, area: IArea, data: any) =>
               showTooltip(
                 status,
@@ -519,6 +549,8 @@ export default React.memo(
             valueKey: lineY2Field,
             seriesField: `${lineY2Field}-${type}`,
             lineStyle: right.lineStyle,
+            visibleLeftX: eventTypeWidth + paddingLeft,
+            visibleRightX: canvasWidth - paddingRight,
             showTooltip: (status: ETooltipStatus, area: IArea, data: any) =>
               showTooltip(
                 status,
@@ -545,6 +577,9 @@ export default React.memo(
 
     const draw = (startX: number, startY: number, moveX: number) => {
       clearCanvas();
+      // const context = getContext();
+      // context.rect(200, 100, canvasWidth - 300, canvasHeight - 100);
+      // context.clip();
       // 画事件 不考虑事件和折线之间的间距
       drawEvents(paddingLeft + startX - moveX, startY + (eventTypeHeight - eventHeight) / 2);
       // 画折线 + 事件和折线之间的间距
@@ -552,7 +587,7 @@ export default React.memo(
       // 画X轴 Y轴 和 辅助线
       drawAxisAndLine(paddingLeft + startX, startY, moveX);
     };
-
+    // 进行可见宽度限制
     useEffect(() => {
       const ele = document.querySelector('.EventLine');
       canvasWidth = ele?.clientWidth || 960;
@@ -560,20 +595,8 @@ export default React.memo(
       // canvasRef.current.height = ele?.clientHeight;
       draw(eventTypeWidth, eventsHeight + paddingTop, mouseMoveX);
     }, [mouseMoveX, mouseXY, mouseStatus, activeEventId]);
-    const canvasHeight =
-      paddingTop +
-      eventsHeight +
-      axisXheight +
-      axisX.scale.textHeight +
-      paddingBottom +
-      (withLine
-        ? lineHeight +
-          axisXheight +
-          axisX.scale.textHeight +
-          line.legend.height +
-          line.legend.marginTop +
-          line.legend.marginBottom
-        : 0);
+
+    console.log('qqq', mouseMoveX, mouseXY, mouseStatus);
     return (
       <div className="EventLine">
         <canvas id={id} ref={canvasRef} width="900" height={canvasHeight} />

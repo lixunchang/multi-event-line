@@ -42,7 +42,7 @@ $ npm i multi-event-line --save
 
 ```tsx
 import React from 'react';
-import { EventLine } from 'multi-event-line';
+import EventLine from 'multi-event-line';
 
 export default () => (
   <EventLine

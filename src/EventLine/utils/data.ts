@@ -12,7 +12,7 @@ export const turnNumber = (value: number, method: 'ceil' | 'floor', rate = 1) =>
   let absValue = Math.abs(value * rate);
   let bite = 0;
   if (absValue < 10) {
-    return fun === 'ceil' ? 10 : 0;
+    return fun === 'ceil' ? 10 / rate : 0;
   }
   while (absValue >= 10) {
     absValue /= 10;
@@ -44,14 +44,22 @@ export const getLineDashYList = (count: number, space: number) => {
 };
 
 export const analysisEventData = (events: any, fieldNames: any = {}) => {
-  const { start = 'start', end = 'end' } = fieldNames || {};
-  return events.reduce(({ min, max }: any, event: any) => {
-    // const eventStart = moment(event?.[start])
-    return {
-      min: momentMin(min || event?.[start], event?.[start]),
-      max: momentMax(max || 0, event?.[end]),
-    };
-  }, {});
+  const { startField = 'start', endField = 'end' } = fieldNames || {};
+  const { startMin, startMax, endMax } = events.reduce(
+    ({ startMin, startMax, endMax }: any, event: any) => {
+      return {
+        startMin: momentMin(startMin || event?.[startField], event?.[startField]),
+        startMax: momentMax(startMax || event?.[startField], event?.[startField]),
+        endMax: momentMax(endMax || 0, event?.[endField]),
+      };
+    },
+    {},
+  );
+
+  return {
+    min: startMin,
+    max: momentMax(startMax, endMax),
+  };
 };
 
 export const analysisLineData = (lines: any, { xField, yField, axisY }: any = {}) => {
