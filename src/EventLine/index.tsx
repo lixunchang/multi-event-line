@@ -206,6 +206,8 @@ export default React.memo(
         axisXData,
         strokeStyle,
         scaleSpace: scale.space,
+        visibleXLeft: eventTypeWidth + paddingLeft,
+        visibleXRight: canvasWidth - paddingRight,
       });
       drawAxisScale(context, offsetX - moveX, offsetY, {
         axisXData,
@@ -213,6 +215,8 @@ export default React.memo(
         fillStyle,
         font,
         unit: axisX.unit,
+        visibleXLeft: eventTypeWidth + paddingLeft,
+        visibleXRight: canvasWidth - paddingRight,
       }); // 绘制刻度
     };
 
@@ -259,6 +263,8 @@ export default React.memo(
             axisYMax,
             axisYMin,
             yTextFormatter: line.axis.y.left.formatter,
+            visibleXLeft: eventTypeWidth + paddingLeft,
+            visibleXRight: canvasWidth - paddingRight,
           });
           drawYAxisText(context, offsetX, offsetYs, {
             axisYMax: axisYMax,
@@ -278,13 +284,15 @@ export default React.memo(
             lineHeight,
           );
 
-          drawHorizontalLine(context, canvasWidth, offsetYs, {
-            lineWidth: 1,
-            strokeStyle: '#999',
-            isDashLine: true,
-            axisXData,
-            scaleSpace: axisX.scale.space,
-          });
+          // drawHorizontalLine(context, canvasWidth, offsetYs, {
+          //   lineWidth: 1,
+          //   strokeStyle: '#999',
+          //   isDashLine: true,
+          //   axisXData,
+          //   scaleSpace: axisX.scale.space,
+          //   visibleXLeft: eventTypeWidth + paddingLeft,
+          //   visibleXRight: canvasWidth - paddingRight,
+          // });
           drawYAxisText(context, canvasWidth, offsetYs, {
             axisYMax: axisY2Max,
             axisYMin: axisY2Min,
@@ -398,13 +406,17 @@ export default React.memo(
           }
           eventW = minWidth;
         }
-        const { rectX = 0, rectW = 0 } = visibilityDraw('event', {
+        const {
+          visible,
+          rectX = 0,
+          rectW = 0,
+        } = visibilityDraw('event', {
           rectX: startX,
           rectW: eventW,
-          visibleLeftX: eventTypeWidth + paddingLeft,
-          visibleRightX: canvasWidth - paddingRight,
+          visibleXLeft: eventTypeWidth + paddingLeft,
+          visibleXRight: canvasWidth - paddingRight,
         });
-        if (rectX <= 0 || rectW <= 0) {
+        if (!visible) {
           return;
         }
         console.log('====', rectX, rectW);
@@ -506,8 +518,8 @@ export default React.memo(
             dtKey: line.xField,
             valueKey: lineYField,
             lineStyle: left.lineStyle,
-            visibleLeftX: eventTypeWidth + paddingLeft,
-            visibleRightX: canvasWidth - paddingRight,
+            visibleXLeft: eventTypeWidth + paddingLeft,
+            visibleXRight: canvasWidth - paddingRight,
             showTooltip: (status: ETooltipStatus, area: IArea, data: any) =>
               showTooltip(
                 status,
@@ -549,8 +561,8 @@ export default React.memo(
             valueKey: lineY2Field,
             seriesField: `${lineY2Field}-${type}`,
             lineStyle: right.lineStyle,
-            visibleLeftX: eventTypeWidth + paddingLeft,
-            visibleRightX: canvasWidth - paddingRight,
+            visibleXLeft: eventTypeWidth + paddingLeft,
+            visibleXRight: canvasWidth - paddingRight,
             showTooltip: (status: ETooltipStatus, area: IArea, data: any) =>
               showTooltip(
                 status,
@@ -593,10 +605,10 @@ export default React.memo(
       canvasWidth = ele?.clientWidth || 960;
       canvasRef.current.width = canvasWidth;
       // canvasRef.current.height = ele?.clientHeight;
+      console.log('useEffect', mouseMoveX, mouseXY, mouseStatus);
       draw(eventTypeWidth, eventsHeight + paddingTop, mouseMoveX);
     }, [mouseMoveX, mouseXY, mouseStatus, activeEventId]);
 
-    console.log('qqq', mouseMoveX, mouseXY, mouseStatus);
     return (
       <div className="EventLine">
         <canvas id={id} ref={canvasRef} width="900" height={canvasHeight} />

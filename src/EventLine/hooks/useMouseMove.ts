@@ -22,6 +22,7 @@ const stopPropagationAndDefault = (event: any) => {
 };
 
 let moveXLength = 0;
+let moveXLength2 = 0;
 
 const useMouseMove = (selector: string, min: any, max: any) => {
   // const [mouseXY, setMouseXY] = useState<ILocation>();
@@ -44,7 +45,6 @@ const useMouseMove = (selector: string, min: any, max: any) => {
     if (!canvas) {
       return;
     }
-    console.log('down', moveXLength);
     setMouseState({
       ...mouseState,
       mouseStatus: EMouseStatus.DOWN,
@@ -73,6 +73,7 @@ const useMouseMove = (selector: string, min: any, max: any) => {
       //   y: event.clientY - canvas.getBoundingClientRect().top,
       // });
     } else {
+      const { mouseMoveX } = mouseState;
       let length = startX - (event.clientX - canvas.getBoundingClientRect().left);
       if (min && length < min) {
         length = min;
@@ -81,6 +82,9 @@ const useMouseMove = (selector: string, min: any, max: any) => {
         length = max;
       }
       moveXLength = length;
+      if (Math.abs(moveXLength - mouseMoveX) < 12) {
+        return;
+      }
       setMouseState({
         ...mouseState,
         mouseMoveX: moveXLength,
@@ -112,6 +116,7 @@ const useMouseMove = (selector: string, min: any, max: any) => {
     if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
       //停止事件冒泡和默认事件
       stopPropagationAndDefault(event);
+      const { mouseMoveX } = mouseState;
       let length = moveXLength + event.deltaX;
       if (min && length < min) {
         length = min;
@@ -120,6 +125,9 @@ const useMouseMove = (selector: string, min: any, max: any) => {
         length = max;
       }
       moveXLength = length;
+      if (Math.abs(moveXLength - mouseMoveX) < 12) {
+        return;
+      }
       setMouseState({
         ...mouseState,
         mouseMoveX: moveXLength,

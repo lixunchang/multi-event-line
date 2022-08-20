@@ -5,18 +5,28 @@ import moment from 'moment';
  * @param type
  * @param data
  */
-export const visibilityDraw = (type: string, data: Record<string, any>) => {
-  const { visibleLeftX: left, visibleRightX: right } = data;
+export const visibilityDraw = (
+  type: string,
+  { visibleXLeft: left, visibleXRight: right, ...rest }: Record<string, any>,
+) => {
   switch (type) {
     case 'event':
-      const { rectX, rectW } = data;
-      const newRectX = rectX <= right ? Math.max(rectX, left - 2) : 0;
-      return { rectX: newRectX, rectW: Math.min(rectX + rectW, right + 2) - newRectX };
+      const { rectX, rectW } = rest;
+      const visibleX = rectX <= right ? Math.max(rectX, left - 2) : 0;
+      const visibleW = Math.min(rectX + rectW, right + 2) - visibleX;
+      return {
+        visible: visibleX > 0 && visibleW > 0,
+        rectX: visibleX,
+        rectW: visibleW,
+      };
     case 'line':
-      const { prevX, pointX } = data;
-      return { visibility: !(prevX && prevX < left && pointX > right) };
+      const { prevX, pointX } = rest;
+      return {
+        visible: !(pointX <= left || prevX >= right),
+        pointX,
+      }; // 两个点必须要有一个点在可见范围内；
     default:
-      return { rectX: 0, rectW: 0 };
+      return rest;
   }
 };
 
@@ -66,9 +76,14 @@ export const drawHorizontalLine = (
     dash = [5, 5],
     offset = 0,
     scaleSpace,
+    visibleXLeft,
+    visibleXRight,
   } = config;
   ctx.lineWidth = lineWidth;
   ctx.strokeStyle = strokeStyle;
+
+  const startX = Math.max(offsetX, visibleXLeft);
+  const endX = Math.min(offsetX + (axisXData.length - 1) * scaleSpace, visibleXRight);
 
   offsetYs.forEach((offsetY, i) => {
     ctx.beginPath();
@@ -77,8 +92,9 @@ export const drawHorizontalLine = (
       ctx.setLineDash(dash);
       ctx.lineDashOffset = offset;
     }
-    ctx.moveTo(offsetX, offsetY);
-    ctx.lineTo(offsetX + (axisXData.length - 1) * scaleSpace, offsetY);
+
+    ctx.moveTo(startX, offsetY);
+    ctx.lineTo(endX, offsetY);
     ctx.stroke();
     ctx.setLineDash([]);
   });
@@ -138,27 +154,34 @@ interface IScaleConfig {
   fillStyle: string;
   font: string;
   unit: string;
+  visibleXLeft: number;
+  visibleXRight: number;
 }
 // 绘制x轴刻度
 export const drawAxisScale = (
   ctx: any,
   offsetX = 0,
   offsetY = 0,
-  { axisXData, scale, fillStyle, font, unit }: IScaleConfig,
+  { axisXData, scale, fillStyle, font, unit, visibleXLeft, visibleXRight }: IScaleConfig,
 ) => {
   axisXData.forEach((item: any, i: number) => {
     const { height, color, text, textHalfWidth } = judgeDayScaleStyle(item, scale);
     ctx.strokeStyle = color;
-    (ctx.lineWidth = scale.lineWidth), ctx.beginPath();
-    ctx.moveTo(offsetX + i * scale.space, offsetY);
-    ctx.lineTo(offsetX + i * scale.space, offsetY - height);
+    ctx.lineWidth = scale.lineWidth;
+    const startX = offsetX + i * scale.space;
+    if (startX < visibleXLeft || startX > visibleXRight) {
+      return;
+    }
+    ctx.beginPath();
+    ctx.moveTo(startX, offsetY);
+    ctx.lineTo(startX, offsetY - height);
     // ctx.closePath();
     ctx.stroke(); // 刻度线
     if (text) {
       ctx.font = font;
       ctx.textBaseline = 'middle';
       ctx.fillStyle = fillStyle;
-      ctx.fillText(text, offsetX + i * scale.space - textHalfWidth, offsetY + 12); // 刻度文本
+      ctx.fillText(text, startX - textHalfWidth, offsetY + 12); // 刻度文本
     }
   });
 };
@@ -266,8 +289,8 @@ export const drawChartLines = (
     dtKey = 'dt',
     valueKey = 'value',
     lineStyle,
-    visibleLeftX,
-    visibleLeftY,
+    visibleXLeft,
+    visibleXRight,
   } = config || {};
   const every = (axisYMax - axisYMin) / (dashLineCount - 1);
   const { dash = [], offset = 0, lineWidth = 2 } = lineStyle || {};
@@ -278,13 +301,19 @@ export const drawChartLines = (
   ctx.beginPath();
   list
     .sort((a: any, b: any) => a?.[dtKey] - b?.[dtKey])
-    .reduce(({ prevX }: any = {}, item: any) => {
+    .reduce(({ prevX = visibleXLeft }: any = {}, item: any) => {
       const len = moment(item?.[dtKey]).diff(axisXStart, 'days');
       const pointX = zeroX + len * scaleSpace;
       const pointY = zeroY - ((item?.[valueKey] - axisYMin) / every) * dashLineSpace;
-      const { visibility } = visibilityDraw('line', { prevX, pointX, visibleLeftX, visibleLeftY });
-      if (!visibility) {
-        return;
+      const { visible } = visibilityDraw('line', {
+        prevX: prevX,
+        pointX,
+        visibleXLeft,
+        visibleXRight,
+      });
+      if (!visible) {
+        ctx.moveTo(pointX, pointY);
+        return { prevX: pointX };
       }
       ctx.lineTo(pointX, pointY);
       // ctx.arc(pointX, pointY, 2, 0, 2*Math.PI)
