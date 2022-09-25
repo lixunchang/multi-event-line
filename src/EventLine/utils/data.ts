@@ -12,7 +12,7 @@ export const turnNumber = (value: number, method: 'ceil' | 'floor', rate = 1) =>
   let absValue = Math.abs(value * rate);
   let bite = 0;
   if (absValue < 10) {
-    return fun === 'ceil' ? 10 / rate : 0;
+    return fun === 'ceil' ? plus * 10 / rate : 0;
   }
   while (absValue >= 10) {
     absValue /= 10;
@@ -62,7 +62,7 @@ export const analysisEventData = (events: any, fieldNames: any = {}) => {
   };
 };
 
-export const analysisLineData = (lines: any, { xField, yField, axisY }: any = {}) => {
+export const analysisLineData = (lines: any=[], { xField, yField, axisY }: any = {}) => {
   return lines?.reduce(({ minDt, maxDt, minValue, maxValue, types }: any, item: any) => {
     return {
       minDt: momentMin(minDt || item?.[xField], item?.[xField]),
@@ -89,7 +89,7 @@ export const analysisEventLineData = (
     maxDt: leftLineMaxDate,
     minValue: leftLineMinValue,
     maxValue: leftLineMaxValue,
-    types: leftLineTypes,
+    types: leftLineTypes = [],
   } = analysisLineData(leftLines, {
     xField: line.xField,
     yField: leftYField,
@@ -100,7 +100,7 @@ export const analysisEventLineData = (
     maxDt: rightLineMaxDate,
     minValue: rightLineMinValue,
     maxValue: rightLineMaxValue,
-    types: rightLineTypes,
+    types: rightLineTypes = [],
   } = analysisLineData(rightLines, {
     xField: line.xField,
     yField: rightYField,

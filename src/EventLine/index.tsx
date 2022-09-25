@@ -78,7 +78,7 @@ export default React.memo(
 
     const canvasRef = useRef<any>(null);
     const getContext = useCallback(() => {
-      return canvasRef.current.getContext('2d');
+      return canvasRef.current?.getContext('2d');
     }, [canvasRef.current]);
     const [tooltipStatus, setTooltipStatus] = useState(ETooltipStatus.NOTHING);
     const [tooltipData, setTooltipData] = useState<any>();
@@ -189,7 +189,7 @@ export default React.memo(
 
     const clearCanvas = () => {
       const context = getContext();
-      context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      context?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     };
 
     const drawXAxis = (
@@ -200,6 +200,7 @@ export default React.memo(
       { strokeStyle = '#999', fillStyle = '#666', font = '' },
     ) => {
       const context = getContext();
+      if (!context) return;
       // 事件x轴
       drawHorizontalLine(context, offsetX, [offsetY], {
         isAxis: true,
@@ -222,6 +223,7 @@ export default React.memo(
 
     const drawAxisAndLine = (offsetX: number, offsetY: number, moveX: number) => {
       const context = getContext();
+      if (!context) return;
       const [lineYField, lineY2Field] = line.yField;
       drawXAxis(
         offsetX,
@@ -338,6 +340,7 @@ export default React.memo(
 
     const drawEventTypes = (offsetX: number, offsetY: number) => {
       const context = getContext();
+      if (!context) return;
       eventTypes.forEach(({ label, sort, primaryColor, secondaryColor, ...rest }: any) => {
         if (sort === 0) {
           drawEventRectWidthText(
@@ -383,6 +386,7 @@ export default React.memo(
 
     const drawEvents = (offsetX: number, offsetY: number) => {
       const context = getContext();
+      if (!context) return;
       const { scale } = axisX;
       const { minWidth, height, radius } = event;
       const { startField, endField, seriesField, titleField, key } = event.fieldNames;
@@ -495,6 +499,7 @@ export default React.memo(
     };
     const drawLines = (offsetX: number, offsetY: number) => {
       const context = getContext();
+      if (!context) return;
       const [leftLines, rightLines] = lines;
       const [lineYField, lineY2Field] = line.yField;
       const { left, right } = line.axis.y;

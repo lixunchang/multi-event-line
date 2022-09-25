@@ -63,10 +63,10 @@ const eventTypes: IEventType[] = [
 const EVENT_DATA: IEventItem[] = [
   {
     id: 1,
-    start: '20200301',
+    start: '20220301',
     end: '20220307',
     title: '事件文本',
-    detail: '211201事件详情20211220',
+    detail: '211201事件详情20221220',
     type: 'one', //事件类型
   },
   {
@@ -74,7 +74,7 @@ const EVENT_DATA: IEventItem[] = [
     start: '20220306',
     end: '20250316',
     title: '事件文本六',
-    detail: '211201事件详情20211220',
+    detail: '211201事件详情20221220',
     type: 'one', //事件类型
   },
   {
@@ -82,7 +82,7 @@ const EVENT_DATA: IEventItem[] = [
     start: '20220306',
     end: '20220316',
     title: '事件文本一',
-    detail: '211201事件详情20211220',
+    detail: '211201事件详情20221220',
     type: 'four', //事件类型
   },
   {
@@ -90,14 +90,14 @@ const EVENT_DATA: IEventItem[] = [
     start: '20220314',
     end: '20220330',
     title: '事件文本二',
-    detail: '20211214事件详情20220228',
+    detail: '20221214事件详情20220228',
     type: 'two', //事件类型
   },
   {
     id: 3,
     start: '20220409',
     title: '三：没有结束时间，文本超出最大宽度限制，文末显示省略号',
-    detail: '20211209事件详情20220102',
+    detail: '20221209事件详情20220102',
     type: 'two', //事件类型
   },
   {
@@ -120,12 +120,12 @@ const EVENT_DATA: IEventItem[] = [
 
 const uvBillData = [
   {
-    time: '2020-03-01',
+    time: '2022-03-01',
     value: 350,
     type: 'uv',
   },
   {
-    time: '2021-04-01',
+    time: '2022-04-01',
     value: 900,
     type: 'uv',
   },
@@ -217,12 +217,12 @@ const transformData = [
     name: 'c',
   },
   {
-    time: '2024-07-01',
+    time: '2022-07-01',
     count: 200,
     name: 'c',
   },
   {
-    time: '2025-10-01',
+    time: '2022-10-01',
     count: 0,
     name: 'c',
   },
@@ -592,6 +592,5 @@ const defaultConfig: IConfig = {
 
 ## 二期计划
 
-- 支持多折线展示；
 - canvas 缩放、下载等功能区的实现；
 - 折线缩略轴?；
