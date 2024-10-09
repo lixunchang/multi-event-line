@@ -4,7 +4,7 @@ React 事件线组件：同步展示事件和折线图，并联动。
 
 A React component that displays multiple types of events and line charts synchronously.
 
-![一期示意图](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/950bf3b04cfc47db807bd63c2d9b686c~tplv-k3u1fbpfcp-watermark.image?)
+![示意图](https://camo.githubusercontent.com/3bf9667306cce7aa44778c3b7633f29d660c5a0031a36d91f2afbbc2762377fb/68747470733a2f2f70312d6a75656a696e2e62797465696d672e636f6d2f746f732d636e2d692d6b3375316662706663702f39353062663362303463666334376462383037626436336332643962363836637e74706c762d6b3375316662706663702d77617465726d61726b2e696d6167653f)
 
 ### 主要功能：(The main function)
 
@@ -31,7 +31,7 @@ $ npm i multi-event-line --save
 
 ### API
 
-API 文档地址：https://gexinpai.github.io/multi-event-line/event-line
+API 文档地址：https://lixunchang.github.io/multi-event-line/event-line
 
 ### 体验 Demo
 

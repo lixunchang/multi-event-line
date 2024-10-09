@@ -2,7 +2,7 @@
   "name": "multi-event-line",
   "description":"A React component that displays multiple types of events and line charts synchronously.",
   "keywords": ["event", "chart", "timeline", "eventline", "事件线", "关键指标", "影响因素"],
-  "version": "1.2.9",
+  "version": "1.3.0",
   "authors": [
     "783263503@qq.com"
   ],
@@ -64,9 +64,9 @@
     "yorkie": "^2.0.0"
   },
   "license": "MIT",
-  "homepage": "https://gexinpai.github.io/multi-event-line/event-line",
+  "homepage": "https://lixunchang.github.io/multi-event-line/event-line",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gexinpai/multi-event-line.git"
+    "url": "https://github.com/lixunchang/multi-event-line.git"
   }
 }
